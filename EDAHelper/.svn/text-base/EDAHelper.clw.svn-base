@@ -1,0 +1,46 @@
+; CLW file contains information for the MFC ClassWizard
+
+[General Info]
+Version=1
+LastClass=CEDAHelperDlg
+LastTemplate=CDialog
+NewFileInclude1=#include "stdafx.h"
+NewFileInclude2=#include "EDAHelper.h"
+
+ClassCount=2
+Class1=CEDAHelperApp
+Class2=CEDAHelperDlg
+
+ResourceCount=2
+Resource1=IDR_MAINFRAME
+Resource2=IDD_EDAHELPER_DIALOG
+
+[CLS:CEDAHelperApp]
+Type=0
+HeaderFile=EDAHelper.h
+ImplementationFile=EDAHelper.cpp
+Filter=N
+BaseClass=CWinApp
+VirtualFilter=AC
+LastObject=CEDAHelperApp
+
+[CLS:CEDAHelperDlg]
+Type=0
+HeaderFile=EDAHelperDlg.h
+ImplementationFile=EDAHelperDlg.cpp
+Filter=D
+BaseClass=CDialog
+VirtualFilter=dWC
+LastObject=IDC_CHECK_AUTORUN
+
+[DLG:IDD_EDAHELPER_DIALOG]
+Type=1
+Class=CEDAHelperDlg
+ControlCount=6
+Control1=IDC_BUTTON_MINIMIZE,button,1342242817
+Control2=IDOK,button,1342242816
+Control3=IDC_EDIT_DESC,edit,1352734788
+Control4=IDC_STATIC,static,1342308352
+Control5=IDC_CHECK_AUTORUN,button,1342242819
+Control6=IDC_BUTTON_HELP,button,1073807360
+
