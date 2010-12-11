@@ -1,0 +1,9 @@
+1、最新版本号
+2、最新版本文件下载地址
+3、最新版本文件更新描述
+4、各版本文件描述、版本号、下载地址
+[CurrentVersion]
+ver=2.0.10
+url=http://www.edahelper.com/edahelper/index.html
+urltype=webpage/file
+desc=各版本文件描述、版本号、下载地址
