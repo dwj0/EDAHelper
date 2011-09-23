@@ -7,6 +7,8 @@
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
+#include "MyPropertySheet.h"
+#include "MyPropertyPage1.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CEDAHelperDlg dialog
@@ -34,6 +36,7 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
+	CMyPropertySheet propSheet;
 
 // Implementation
 protected:
@@ -50,9 +53,14 @@ protected:
 	afx_msg void OnDestroy();
 	afx_msg void OnButtonHelp();
 	afx_msg void OnTimer(UINT nIDEvent);
-	afx_msg void OnCheckUpdate();
+	afx_msg void OnProperties();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+private:
+	TCHAR szVerTip[32];
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -1,7 +1,7 @@
 K 25
 svn:wc:ra_dav:version-url
-V 39
-/svn/!svn/ver/3/EDAHelper/EDAHelper/res
+V 40
+/svn/!svn/ver/20/EDAHelper/EDAHelper/res
 END
 tt.ICO
 K 25
@@ -21,9 +21,21 @@ svn:wc:ra_dav:version-url
 V 53
 /svn/!svn/ver/3/EDAHelper/EDAHelper/res/EDAHelper.ico
 END
+icon1.ico
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/28/EDAHelper/EDAHelper/res/icon1.ico
+END
+cursor1.cur
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/28/EDAHelper/EDAHelper/res/cursor1.cur
+END
 EDAHelper.rc2
 K 25
 svn:wc:ra_dav:version-url
-V 53
-/svn/!svn/ver/3/EDAHelper/EDAHelper/res/EDAHelper.rc2
+V 54
+/svn/!svn/ver/20/EDAHelper/EDAHelper/res/EDAHelper.rc2
 END

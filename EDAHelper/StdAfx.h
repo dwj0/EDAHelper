@@ -14,7 +14,6 @@
 #define WINVER 0X500
 #define _WIN32_WINNT 0X500
 
-
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 
 #include <afxwin.h>         // MFC core and standard components
@@ -26,6 +25,11 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
 #include <afxsock.h>		// MFC socket extensions
+
+// User define area
+#define CONFIG_ENTRY	_T("Settings")
+
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 
 //{{AFX_INSERT_LOCATION}}

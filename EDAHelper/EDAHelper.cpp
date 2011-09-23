@@ -42,17 +42,25 @@ BOOL AlreadyRunning()
    BOOL bFound = FALSE;
 
    // Try to create a mutex with the app's name
-   HANDLE hMutexOneInstance = CreateMutex(NULL,TRUE,"EDAHelper");
+   HANDLE hMutexOneInstance = CreateMutex(NULL,TRUE, _T("EDAHelper"));
 
    // Already there...means that we are already running an instance
    if(GetLastError() == ERROR_ALREADY_EXISTS)
    {
-      bFound = TRUE;
-      MessageBox(NULL, _T("进程已存在一个实例，退出执行"), _T("温馨提示"), MB_OK | MB_ICONINFORMATION);
-   }
-   // Release the mutex
-   if(hMutexOneInstance)
-      ReleaseMutex(hMutexOneInstance);
+		bFound = TRUE;
+//		MessageBox(NULL, _T("程序已经运行！"), _T("温馨提示"), MB_OK | MB_ICONINFORMATION);
+		HWND hWnd = FindWindowEx(NULL, NULL, NULL, _T("EDAHelper(原名protel99se鼠标增强工具)"));
+		if(hWnd)
+		{
+			if (::IsIconic(hWnd)) 
+				::ShowWindow(hWnd,SW_RESTORE); 
+  
+			SetForegroundWindow(hWnd);
+		}
+	}
+	// Release the mutex
+	if(hMutexOneInstance)
+		ReleaseMutex(hMutexOneInstance);
 
    return(bFound);
 }
@@ -80,7 +88,9 @@ BOOL CEDAHelperApp::InitInstance()
 		return FALSE;
 	}
 
-
+	// Change the registry key under which our settings are stored.
+	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
+	
 	CEDAHelperDlg dlg;
 	m_pMainWnd = &dlg;
 	int nResponse = dlg.DoModal();
