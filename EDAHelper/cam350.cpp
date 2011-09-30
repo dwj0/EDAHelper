@@ -85,7 +85,9 @@ LRESULT Cam350Proc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 	}
 	{
 		static DWORD lParamSave;
-		HWND hWnd = GetForegroundWindow();
+		POINT	pt;
+		GetCursorPos(&pt);
+		HWND hWnd = WindowFromPoint(pt);
 		if((gEnableConfig & CAM350_MIDBTN_ZOOM) && (wParam == WM_MOUSEWHEEL))
 		{
 			if((short)HIWORD(pMSLLHook->mouseData) > 0)

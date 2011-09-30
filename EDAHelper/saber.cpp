@@ -29,7 +29,10 @@ LRESULT SaberProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 	}
 	PMSLLHOOKSTRUCT pMSLLHook = (PMSLLHOOKSTRUCT)lParam;
 
-	HWND hWnd = GetForegroundWindow();
+	POINT	pt;
+	HWND hWnd;
+	GetCursorPos(&pt);
+	hWnd = WindowFromPoint(pt);
 	if((gEnableConfig & SABER_MIDBTN_ZOOM) && (wParam == WM_MOUSEWHEEL))
 	{
 		if((GetAsyncKeyState(VK_CONTROL) || GetAsyncKeyState(VK_SHIFT) || GetAsyncKeyState(VK_MENU)) && 0x8000)

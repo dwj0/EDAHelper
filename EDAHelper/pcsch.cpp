@@ -80,7 +80,9 @@ LRESULT PcschProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 		return CallNextHookEx(hkb, nCode, wParam, lParam );
 	}
 	{
-		HWND hWnd = GetForegroundWindow();
+		POINT	pt;
+		GetCursorPos(&pt);
+		HWND hWnd = WindowFromPoint(pt);
 		if((gEnableConfig & PCSCH_MIDBTN_ZOOM) && (wParam == WM_MOUSEWHEEL))
 		{
 			if((GetAsyncKeyState(VK_CONTROL) || GetAsyncKeyState(VK_SHIFT) || GetAsyncKeyState(VK_MENU)) && 0x8000)

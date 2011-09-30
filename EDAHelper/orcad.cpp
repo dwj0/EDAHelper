@@ -52,7 +52,7 @@ LRESULT OrcadProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 				ULONG	NumberOfBytesRead;
 				int		scale;
 
-				hStatusBar = GetDlgItem(GetForegroundWindow(), AFX_IDW_STATUS_BAR);
+				hStatusBar = GetDlgItem(GetAncestor(hWnd, GA_ROOT), AFX_IDW_STATUS_BAR);
 				::GetWindowThreadProcessId(hStatusBar, &dwProcessID);
 				hProcess = OpenProcess(PROCESS_VM_OPERATION|PROCESS_VM_READ|PROCESS_VM_WRITE, false, dwProcessID);
 				Pointer = VirtualAllocEx(hProcess, NULL, 64, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE); 
@@ -149,7 +149,9 @@ LRESULT OrcadProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 		return CallNextHookEx(hkb, nCode, wParam, lParam );
 	}
 	{
-		HWND hWnd = GetForegroundWindow();
+		POINT	pt;
+		GetCursorPos(&pt);
+		HWND hWnd = WindowFromPoint(pt);
 		if((gEnableConfig & ORCAD_MIDBTN_ZOOM) && (wParam == WM_MOUSEWHEEL))
 		{
 			if(nWinType & WIN_ORCAD_CAPTURE)

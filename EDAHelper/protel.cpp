@@ -81,7 +81,10 @@ LRESULT ProtelProc(int nWinType, int nCode,WPARAM wParam,LPARAM lParam)
 	{
 //		static POINT	pt_pre={0,0}, pt_cur;
 
-		HWND hWnd = GetForegroundWindow();
+		POINT	pt;
+		GetCursorPos(&pt);
+		HWND hWnd = WindowFromPoint(pt);
+		hWnd = GetAncestor (hWnd, GA_ROOT);
 		if((gEnableConfig & PROTEL_MIDBTN_ZOOM) && (wParam == WM_MOUSEWHEEL))
 		{
 			if((GetAsyncKeyState(VK_CONTROL) || GetAsyncKeyState(VK_SHIFT) || GetAsyncKeyState(VK_MENU)) && 0x8000)
