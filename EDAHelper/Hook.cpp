@@ -49,7 +49,7 @@ WindowType_t CheckProcess(void)
 {
 	static DWORD		pid;			//全部static是为了减少访问堆栈的时间
 	static HANDLE		hProcess;
-	static TCHAR		szProcessName[256];
+	TCHAR		szProcessName[256];
 	static TCHAR		szClassName[16];
 	static HMODULE		hMod;
 	static DWORD		cbNeeded;
@@ -225,7 +225,15 @@ BOOL HookInstall()// 用WM_ACTIVATEAPP消息判断当前窗口进程可能效率更高，但必需用D
 	hkb = SetWindowsHookEx(WH_MOUSE_LL, (HOOKPROC)LowLevelMouseProc, AfxGetInstanceHandle(), 0);
 //	hkb = SetWindowsHookEx(WH_CALLWNDPROC, (HOOKPROC)CallWndProc, GetModuleHandle (NULL), 0);
 //	hkb = SetWindowsHookEx(WH_CBT, (HOOKPROC)CallWndProc, AfxGetInstanceHandle(), 0);
-	return TRUE;
+	if(hkb)
+	{
+		return	TRUE;
+	}
+	else
+	{
+		AfxMessageBox(_T("HookInstall: failed"));
+		return FALSE;
+	}
 }
 
 BOOL HookUninstall()
@@ -248,7 +256,14 @@ BOOL HookInit()
 #endif
 	pEnumProcessModules =
 			(EnumProcessModules_t)GetProcAddress(hPsDll, "EnumProcessModules");
-	return TRUE;
+	if(pGetModuleBaseName && pEnumProcessModules)
+	{
+		return TRUE;
+	}else
+	{
+		AfxMessageBox(_T("HookInit(): failed"));
+		return FALSE;
+	}
 }
 
 BOOL HookRegister(HookList_t *pHookList)

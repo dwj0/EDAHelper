@@ -149,7 +149,7 @@ CString GetUpdateInfo(CHttpFile *pfile, char *szVerCur)
 
 void UpdateCheck(bool IsQuiet)
 {
-	CString	szClientName = AfxGetAppName();
+	CString	szClientName = "EDAHelper";//AfxGetAppName();
 	szClientName += _T("-");
 	szClientName += _T(CURRENT_VERSION);
 
