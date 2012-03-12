@@ -8,6 +8,7 @@
 static const TCHAR FuncAppName[]=_T("Pads");
 
 static UINT gEnableConfig;
+static bool mbtnSendMsgFlag = FALSE;
 
 UINT	PadsGetConf(void)
 {
@@ -44,15 +45,15 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 
 	if((gEnableConfig & PADS_RIGBTN_DRAG) && (wParam == WM_MOUSEMOVE))
 	{
+		POINT	pt;
+		HWND	hWnd;
+		GetCursorPos(&pt);
+		hWnd = WindowFromPoint(pt);
 		if(rbtnDown)
 		{
-			POINT	pt;
-			HWND	hWnd;
 			int		step = PIXEL_PER_STEP;
 			int		distance;
 
-			GetCursorPos(&pt);
-			hWnd = WindowFromPoint(pt);
 #if 0
 			SCROLLINFO	si;
 			int	x, y;
@@ -227,6 +228,13 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 		else if(mbtnDown)
 		{
 			mbtnMove = TRUE;
+			if (!mbtnSendMsgFlag)
+			{
+				ScreenToClient(hWnd, &pt);
+				keybd_event(VK_MBUTTON, 0,  0, 0);
+				PostMessage(hWnd, WM_MBUTTONDOWN, MK_MBUTTON, MAKELONG(pt.x,pt.y));
+				mbtnSendMsgFlag = TRUE;
+			}
 		}
 			
 		return CallNextHookEx(hkb, nCode, wParam, lParam );
@@ -276,6 +284,8 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 			{
 				mbtnMove = FALSE;
 				mbtnDown = TRUE;
+				mbtnSendMsgFlag = 0;
+				return TRUE;
 			}
 		}
 		else if((gEnableConfig & PADS_MIDBTN_SWITCH) && (wParam == WM_MBUTTONUP))
@@ -286,6 +296,7 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 				if(!mbtnMove)
 				{
 					SwitchLayer(hWnd);
+					return TRUE;
 				}
 			}
 			return CallNextHookEx(hkb, nCode, wParam, lParam );
