@@ -231,9 +231,10 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 			if (!mbtnSendMsgFlag)
 			{
 				ScreenToClient(hWnd, &pt);
-				keybd_event(VK_MBUTTON, 0,  0, 0);
+				keybd_event(VK_MBUTTON, 1, 0, 0);
 				PostMessage(hWnd, WM_MBUTTONDOWN, MK_MBUTTON, MAKELONG(pt.x,pt.y));
 				mbtnSendMsgFlag = TRUE;
+				return TRUE;
 			}
 		}
 			
