@@ -9,6 +9,11 @@ static const TCHAR FuncAppName[]=_T("Pads");
 
 static UINT gEnableConfig;
 static bool mbtnSendMsgFlag = FALSE;
+static HDC	hDc, hDcCompatible;
+static HBITMAP hbmCompatible;
+static bool rbtnDragFlag = FALSE;
+static int dist_x, dist_y;		// 右键移动的时候使用，表现移动的距离
+static CRect	Rect;
 
 UINT	PadsGetConf(void)
 {
@@ -52,7 +57,6 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 		if(rbtnDown)
 		{
 			int		step = PIXEL_PER_STEP;
-			int		distance;
 
 #if 0
 			SCROLLINFO	si;
@@ -143,54 +147,87 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 // 			TRACE2("GetScrollInfo nMin = %d\n", si.nMin);
 // 			TRACE2("GetScrollInfo nPos = %d\n", si.nPos);
 //			SetScrollPos(hWnd, SB_VERT, si.nPos, TRUE);
-			HDC		hDc;
-			RECT	Rect;
-//				HBRUSH	hbr;
-			hDc = GetDC(hWnd);
-			GetWindowRect(hWnd, &Rect);
-//			GetClientRect(hWnd, &Rect);
-
-//				CDC dcMemory;
-//				TRACE2("cdc = %d\n", sizeof(dcMemory));
-//				dcMemory.CreateCompatibleDC(CDC::FromHandle(hDc));
-//				dcMemory.Get
-
-//				BitBlt(hDc, 0, 0, Rect.right, Rect.bottom, dcMemory.m_hDC, 0, 0, SRCCOPY);
-//				BitBlt(dcMemory.m_hDC, -10, -10, Rect.right - Rect.left, Rect.bottom - Rect.top, hDc, 0, 0, SRCCOPY);
-			
-			//FillRect(hDc, &Rect, hbr);
-//				LineTo(hDc, 100, 1000);
-// 			BitBlt(
-// 				hDc,
-// 				-0,
-// 				-1,
-// 				Rect.right - Rect.left,
-// 				Rect.bottom - Rect.top,
-// 				hDc,
-// 				0,
-// 				0,
-// 				SRCCOPY);
- 			CBrush	hbr;
-//			PostMessage(hWnd, WM_PAINT, NULL, NULL);
-//			ScrollWindow(hWnd, 0, -10, NULL, NULL);
-//			UpdateWindow (hWnd);
-			
-//			ScrollWindowEx(hWnd, 0, 1, )
-//			((CScrollView*) CWnd::FromHandle(hWnd))->ScrollToPosition(pta);
-//			InvalidateRect(hWnd, &Rect, TRUE);
-			hbr.CreateSolidBrush(100);
-//			LRESULT ret = SendMessage(hWnd, SBM_GETPOS, NULL, NULL);
-//			TRACE2("ret = %x\n", ret);
-			
-//			PostMessage(hWnd, WM_VSCROLL, SB_ENDSCROLL, NULL);
-//			PostMessage(hWnd, WM_KEYDOWN, VK_END, NULL);
-//			PostMessage(hWnd, WM_KEYUP, VK_END, NULL);
-			rbtnMove = TRUE;
-			return CallNextHookEx(hkb, nCode, wParam, lParam );
-
-//			FillRect(hDc, &Rect, (HBRUSH)hbr);
 #endif
+#if 1
+			if (FALSE == rbtnDragFlag)
+			{
+				dist_x = 0;
+				dist_y = 0;
+				rbtnDragFlag = TRUE;
 
+				hDc = GetDC(hWnd);
+				GetClientRect(hWnd, &Rect);
+				hDcCompatible = CreateCompatibleDC(hDc);
+				if(!hDcCompatible)
+				{
+					TRACE1("hDcCompatible Error Code = %d\n", GetLastError());
+				}
+				hbmCompatible = CreateCompatibleBitmap(hDc, 
+					Rect.right - Rect.left,
+					Rect.bottom - Rect.top);
+				if(!hbmCompatible)
+				{
+					TRACE1("hbmCompatible Error Code = %d\n", GetLastError());
+				}
+				SelectObject(hDcCompatible, hbmCompatible);
+				BitBlt(
+					hDcCompatible,
+					0,
+					0,
+					Rect.Width(),
+					Rect.Height(),
+					hDc,
+					0,
+					0,
+					SRCCOPY);
+			}
+			dist_x += pMSLLHook->pt.x - CurPosPre.x;
+			dist_y += pMSLLHook->pt.y - CurPosPre.y;
+// 			dist_x = pMSLLHook->pt.x - CurPosPre.x;
+// 			dist_y = pMSLLHook->pt.y - CurPosPre.y;
+			TRACE2("x = %d, y = %d\n",dist_x, dist_y);
+			TRACE2("px = %d, y = %d\n",pMSLLHook->pt.x, pMSLLHook->pt.y);
+			TRACE2("x = %d, y = %d\n",CurPosPre.x, CurPosPre.y);
+			BitBlt(
+				hDc,
+				dist_x,
+				dist_y,
+				Rect.Width(),
+				Rect.Height(),
+				hDcCompatible,
+				0,
+				0,
+ 				SRCCOPY);
+
+			CBrush	hbr;
+			CRect	rcTmp = Rect;
+			hbr.CreateSolidBrush(0);
+			if(dist_x > 0)
+			{
+				rcTmp.right = rcTmp.left + dist_x; 
+			}
+			else
+			{
+				rcTmp.left = rcTmp.right + dist_x;
+			}
+			FillRect(hDc, &rcTmp, (HBRUSH)hbr);
+			rcTmp = Rect;
+			if(dist_y > 0)
+			{
+				rcTmp.bottom = rcTmp.top + dist_y; 
+			}
+			else
+			{
+				rcTmp.top = rcTmp.bottom + dist_y;
+			}
+			FillRect(hDc, &rcTmp, (HBRUSH)hbr);
+
+			rbtnMove = TRUE;
+			return TRUE;
+//			return CallNextHookEx(hkb, nCode, wParam, lParam );
+
+#else
+			int		distance;
 			distance = pMSLLHook->pt.x - CurPosPre.x;
 			while( abs(distance) > step)
 			{
@@ -202,7 +239,7 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 				{
 					PostMessage(hWnd, WM_HSCROLL, SB_LINERIGHT, NULL);
 				}
-//				RefreshScreen(hWnd);
+
 				CurPosPre.x = pMSLLHook->pt.x;
 				rbtnMove = TRUE;
 				distance = distance > 0 ? distance - step: distance + step;
@@ -215,8 +252,6 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 				else
 					PostMessage(hWnd, WM_VSCROLL, SB_LINEDOWN, NULL);
 
-//				RefreshScreen(hWnd);
-
 				CurPosPre.y = pMSLLHook->pt.y;
 				rbtnMove = TRUE;
 				
@@ -224,6 +259,7 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 			}
 
 			return CallNextHookEx(hkb, nCode, wParam, lParam );
+#endif
 		}
 		else if(mbtnDown)
 		{
@@ -253,6 +289,7 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 			TRACE1("pMSLLHook->mouseData = %x\n", pMSLLHook->mouseData);
 			if((short)HIWORD(pMSLLHook->mouseData) > 0)
 			{
+
 #ifndef _DEBUG
 				PostMessage(hWnd, WM_KEYDOWN, 0x21, 0);
 #else
@@ -312,6 +349,7 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 			}
 			rbtnDown = TRUE;
 			CurPosPre = pMSLLHook->pt;
+			rbtnDragFlag = FALSE;
 			return TRUE;
 		}
 		else if((gEnableConfig & PADS_RIGBTN_DRAG) && (wParam == WM_RBUTTONUP))
@@ -323,16 +361,46 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 			}
 			if(rbtnMove)
 			{
+				CRect	Rect;
+				POINT	pttmp;
 				rbtnMove = FALSE;
+				GetClientRect(hWnd, &Rect);
+
+				keybd_event(VK_MBUTTON, 1, 0, 0);
+				lParam = MAKELPARAM(Rect.CenterPoint().x - dist_x, Rect.CenterPoint().y - dist_y);
+				PostMessage(hWnd, WM_MBUTTONDOWN, MK_MBUTTON, lParam);
+				PostMessage(hWnd, WM_MBUTTONUP, MK_MBUTTON, lParam);
+				keybd_event(VK_MBUTTON, 1, KEYEVENTF_KEYUP, 0);
+
+				pttmp.x = CurPosPre.x + dist_x;
+				pttmp.y = CurPosPre.y + dist_y;
+				if(!SetCursorPos(pttmp.x, pttmp.y))
+				{
+					TRACE0("Error SetCursorPos\n");
+				}
+
+				if (!DeleteObject(hbmCompatible))
+				{
+					TRACE1("deleteobject error %d\n", GetLastError());
+				}
+				if (!DeleteDC(hDcCompatible))
+				{
+					TRACE1("DeleteDC error %d\n", GetLastError());
+				}
+				if (!ReleaseDC(hWnd, hDc))
+				{
+					TRACE1("ReleaseDC error %d\n", GetLastError());
+				}
+
 				return TRUE;
 			}
 			POINT	p;
 			GetCursorPos(&p);
 			hWnd = WindowFromPoint(p);
-
+  
 			ScreenToClient(hWnd, &p);
 			lParam = MAKELPARAM(p.x, p.y);
-			PostMessage(hWnd, WM_RBUTTONDOWN, MK_LBUTTON, lParam);
+			PostMessage(hWnd, WM_RBUTTONDOWN, MK_RBUTTON, lParam);
 			return CallNextHookEx(hkb, nCode, wParam, lParam );
 		}
 	}
