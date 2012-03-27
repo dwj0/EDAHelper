@@ -51,6 +51,7 @@ extern BOOL		mbtnMove;
 
 extern POINT	pt_pre, pt_cur;
 
+extern TCHAR	szProcessName[256];
 
 #define	PIXEL_PER_STEP		32
 

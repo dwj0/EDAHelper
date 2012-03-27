@@ -22,7 +22,7 @@ static char THIS_FILE[] = __FILE__;
 // CEDAHelperDlg dialog
 
 static TCHAR	*AppDesc = 
-_T("2.1.11说明：\r\n")
+_T("2.1.12说明：\r\n")
 _T("    本软件是多种EDA软件的鼠标增强工具，绿色单文件，支持Win9x/NT/2000/XP/WIN7，其中WIN7需要以管理员模式运行，")
 _T("另外，Win9x需要编译成非UNICODE版本，有需要的用户可发邮件给我索取，支持protel99se，DXP(AD)，PADS，OrCAD的capture、")
 _T("Cam350、Saber、PC Schematic、Allegro、CircuitCAM,并且对每个软件的功能都可设置，用户可根据使用习惯打开或者关闭功能。\r\n")
@@ -41,7 +41,7 @@ _T("    10.按中键向下移动，可删除当前焦点或选中内容，相当于按DELETE和CTRL+DELETE
 _T("\r\n针对PADS(支持各种版本logic, pcb)：\r\n")
 _T("    1. 向上滚动滚轮 --> 放大，相当于PageUp\r\n")
 _T("    2. 向下滚动滚轮 --> 缩小，相当于PageDown\r\n")
-_T("    3. 按住鼠标右键移动，可移动工作区，相当于SHIFT+滚轮或者ALT+滚轮，不平滑\r\n")
+_T("    3. 按住鼠标右键移动，可移动工作区\r\n")
 _T("    4. 鼠标中键点击 --> 切换图层，相当于F4，原中键点击功能废弃\r\n")
 _T("    5. 按左键拖目标 --> 再按右键可旋转，相当于TAB键的功能，在布局时非常好用，请留意\r\n")
 _T("\r\n针对OrCAD：\r\n")
@@ -85,6 +85,9 @@ _T("    1、修改程序启动24小时后再检测更新出错的问题\r\n")
 _T("    2、再次修改自动运行有时候失败的问题\r\n")
 _T("    3、修改非活动窗口时操作失效的问题，特别是查看自动隐藏的QQ窗口后容易出现\r\n")
 _T("    4、优化PADS Router里画线时的中键换层操作，使之不再移动屏幕，同时建议把unroute的快捷键定义为F4，因为这样在选中走线的时候，按中键就可以删除\r\n")
+_T("    5、修改pads右键平滑移动(可设置回传统模式)\r\n")
+_T("    6、五周年纪念\r\n")
+_T("    7、通过360认证(请2.1.10以前的版本升级，否则可能出现死锁)\r\n")
 _T("2.1.11：\r\n")
 _T("    1、修改自动运行有时候失败的问题\r\n")
 _T("2.1.10：\r\n")
@@ -631,3 +634,4 @@ void CEDAHelperDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	
 	CDialog::OnLButtonUp(nFlags, point);
 }
+

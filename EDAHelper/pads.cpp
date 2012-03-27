@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Hook.h"
+#include "EDAHelper.h"
 #include "pads.h"
 #include "winuser.h"
 #include <tlhelp32.h>
@@ -95,7 +96,7 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 			GetScrollRange(hWnd, SB_VERT, &x, &y);
 			TRACE2("x = %d, y = %d\n", x, y);
 			y = GetScrollPos(hWnd, SB_VERT);
-			TRACE2("y_Pos = %d\n", y);
+			TRACE1("y_Pos = %d\n", y);
 			
 			ZeroMemory(&si, sizeof(si));
 			si.cbSize = sizeof(si);
@@ -104,11 +105,11 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 //			SetScrollPos(hWnd, SB_VERT, y+1, TRUE);
 			if(GetScrollInfo(hWnd, SB_VERT, (SCROLLINFO*)&si))
 			{
- 				TRACE2("GetScrollInfo nPos = %d\n", si.nPos);
+ 				TRACE1("GetScrollInfo nPos = %d\n", si.nPos);
 			}
 			else
 			{
-				TRACE2("Error = 0x%x\n", GetLastError());
+				TRACE1("Error = 0x%x\n", GetLastError());
 			}
 			si.nPos =670;
 //			ScrollWindow(hWnd, 0, 1, NULL, NULL);
@@ -133,13 +134,13 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 //			TRACE2("SendMessage Ret = %d\n", ret1);
 			if(GetScrollInfo(hWnd, SB_VERT, (SCROLLINFO*)&si))
 			{
-				TRACE2("GetScrollInfo nPage = %d\n", si.nPage);
-				TRACE2("GetScrollInfo nTrackPos = %d\n", si.nTrackPos);
-				TRACE2("GetScrollInfo nPos = %d\n", si.nPos);
+				TRACE1("GetScrollInfo nPage = %d\n", si.nPage);
+				TRACE1("GetScrollInfo nTrackPos = %d\n", si.nTrackPos);
+				TRACE1("GetScrollInfo nPos = %d\n", si.nPos);
 			}
 			else
 			{
-				TRACE2("Error = 0x%x\n", GetLastError());
+				TRACE1("Error = 0x%x\n", GetLastError());
 			}
 
 			si.nPos -=10;
@@ -148,118 +149,121 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 // 			TRACE2("GetScrollInfo nPos = %d\n", si.nPos);
 //			SetScrollPos(hWnd, SB_VERT, si.nPos, TRUE);
 #endif
-#if 1
-			if (FALSE == rbtnDragFlag)
+			if(gEnableConfig & PADS_RIGBTN_DRAG_SMOOTH)
 			{
-				dist_x = 0;
-				dist_y = 0;
-				rbtnDragFlag = TRUE;
+				if (FALSE == rbtnDragFlag)
+				{
+					dist_x = 0;
+					dist_y = 0;
+					rbtnDragFlag = TRUE;
 
-				hDc = GetDC(hWnd);
-				GetClientRect(hWnd, &Rect);
-				hDcCompatible = CreateCompatibleDC(hDc);
-				if(!hDcCompatible)
-				{
-					TRACE1("hDcCompatible Error Code = %d\n", GetLastError());
+					hDc = GetDC(hWnd);
+					GetClientRect(hWnd, &Rect);
+					hDcCompatible = CreateCompatibleDC(hDc);
+					if(!hDcCompatible)
+					{
+						TRACE1("hDcCompatible Error Code = %d\n", GetLastError());
+					}
+					hbmCompatible = CreateCompatibleBitmap(hDc, 
+						Rect.right - Rect.left,
+						Rect.bottom - Rect.top);
+					if(!hbmCompatible)
+					{
+						TRACE1("hbmCompatible Error Code = %d\n", GetLastError());
+					}
+					SelectObject(hDcCompatible, hbmCompatible);
+					BitBlt(
+						hDcCompatible,
+						0,
+						0,
+						Rect.Width(),
+						Rect.Height(),
+						hDc,
+						0,
+						0,
+						SRCCOPY);
 				}
-				hbmCompatible = CreateCompatibleBitmap(hDc, 
-					Rect.right - Rect.left,
-					Rect.bottom - Rect.top);
-				if(!hbmCompatible)
-				{
-					TRACE1("hbmCompatible Error Code = %d\n", GetLastError());
-				}
-				SelectObject(hDcCompatible, hbmCompatible);
+				dist_x += pMSLLHook->pt.x - CurPosPre.x;
+				dist_y += pMSLLHook->pt.y - CurPosPre.y;
+//	 			dist_x = pMSLLHook->pt.x - CurPosPre.x;
+//	 			dist_y = pMSLLHook->pt.y - CurPosPre.y;
+				TRACE2("x = %d, y = %d\n",dist_x, dist_y);
+				TRACE2("px = %d, y = %d\n",pMSLLHook->pt.x, pMSLLHook->pt.y);
+				TRACE2("x = %d, y = %d\n",CurPosPre.x, CurPosPre.y);
 				BitBlt(
+					hDc,
+					dist_x,
+					dist_y,
+					Rect.Width(),
+					Rect.Height(),
 					hDcCompatible,
 					0,
 					0,
-					Rect.Width(),
-					Rect.Height(),
-					hDc,
-					0,
-					0,
-					SRCCOPY);
-			}
-			dist_x += pMSLLHook->pt.x - CurPosPre.x;
-			dist_y += pMSLLHook->pt.y - CurPosPre.y;
-// 			dist_x = pMSLLHook->pt.x - CurPosPre.x;
-// 			dist_y = pMSLLHook->pt.y - CurPosPre.y;
-			TRACE2("x = %d, y = %d\n",dist_x, dist_y);
-			TRACE2("px = %d, y = %d\n",pMSLLHook->pt.x, pMSLLHook->pt.y);
-			TRACE2("x = %d, y = %d\n",CurPosPre.x, CurPosPre.y);
-			BitBlt(
-				hDc,
-				dist_x,
-				dist_y,
-				Rect.Width(),
-				Rect.Height(),
-				hDcCompatible,
-				0,
-				0,
- 				SRCCOPY);
+ 					SRCCOPY);
 
-			CBrush	hbr;
-			CRect	rcTmp = Rect;
-			hbr.CreateSolidBrush(0);
-			if(dist_x > 0)
-			{
-				rcTmp.right = rcTmp.left + dist_x; 
-			}
-			else
-			{
-				rcTmp.left = rcTmp.right + dist_x;
-			}
-			FillRect(hDc, &rcTmp, (HBRUSH)hbr);
-			rcTmp = Rect;
-			if(dist_y > 0)
-			{
-				rcTmp.bottom = rcTmp.top + dist_y; 
-			}
-			else
-			{
-				rcTmp.top = rcTmp.bottom + dist_y;
-			}
-			FillRect(hDc, &rcTmp, (HBRUSH)hbr);
-
-			rbtnMove = TRUE;
-			return TRUE;
-//			return CallNextHookEx(hkb, nCode, wParam, lParam );
-
-#else
-			int		distance;
-			distance = pMSLLHook->pt.x - CurPosPre.x;
-			while( abs(distance) > step)
-			{
-				if(distance > 0)
+				CBrush	hbr;
+				CRect	rcTmp = Rect;
+				hbr.CreateSolidBrush(0);
+				if(dist_x > 0)
 				{
-					PostMessage(hWnd, WM_HSCROLL, SB_LINELEFT, NULL);
+					rcTmp.right = rcTmp.left + dist_x; 
 				}
 				else
 				{
-					PostMessage(hWnd, WM_HSCROLL, SB_LINERIGHT, NULL);
+					rcTmp.left = rcTmp.right + dist_x;
 				}
-
-				CurPosPre.x = pMSLLHook->pt.x;
-				rbtnMove = TRUE;
-				distance = distance > 0 ? distance - step: distance + step;
-			}
-			distance = pMSLLHook->pt.y - CurPosPre.y;
-			while(abs(distance) > step)
-			{
-				if(distance > 0)
-					PostMessage(hWnd, WM_VSCROLL, SB_LINEUP, NULL);
+				FillRect(hDc, &rcTmp, (HBRUSH)hbr);
+				rcTmp = Rect;
+				if(dist_y > 0)
+				{
+					rcTmp.bottom = rcTmp.top + dist_y; 
+				}
 				else
-					PostMessage(hWnd, WM_VSCROLL, SB_LINEDOWN, NULL);
+				{
+					rcTmp.top = rcTmp.bottom + dist_y;
+				}
+				FillRect(hDc, &rcTmp, (HBRUSH)hbr);
 
-				CurPosPre.y = pMSLLHook->pt.y;
 				rbtnMove = TRUE;
+				return TRUE;
+//				return CallNextHookEx(hkb, nCode, wParam, lParam );
+			}
+
+			else
+			{
+				int		distance;
+				distance = pMSLLHook->pt.x - CurPosPre.x;
+				while( abs(distance) > step)
+				{
+					if(distance > 0)
+					{
+						PostMessage(hWnd, WM_HSCROLL, SB_LINELEFT, NULL);
+					}
+					else
+					{
+						PostMessage(hWnd, WM_HSCROLL, SB_LINERIGHT, NULL);
+					}
+					
+					CurPosPre.x = pMSLLHook->pt.x;
+					rbtnMove = TRUE;
+					distance = distance > 0 ? distance - step: distance + step;
+				}
+				distance = pMSLLHook->pt.y - CurPosPre.y;
+				while(abs(distance) > step)
+				{
+					if(distance > 0)
+						PostMessage(hWnd, WM_VSCROLL, SB_LINEUP, NULL);
+					else
+						PostMessage(hWnd, WM_VSCROLL, SB_LINEDOWN, NULL);
+					
+					CurPosPre.y = pMSLLHook->pt.y;
+					rbtnMove = TRUE;
+					
+					distance = distance > 0 ? distance - step: distance + step;
+				}
 				
-				distance = distance > 0 ? distance - step: distance + step;
+				return CallNextHookEx(hkb, nCode, wParam, lParam );
 			}
-
-			return CallNextHookEx(hkb, nCode, wParam, lParam );
-#endif
 		}
 		else if(mbtnDown)
 		{
@@ -374,6 +378,7 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 
 				pttmp.x = CurPosPre.x + dist_x;
 				pttmp.y = CurPosPre.y + dist_y;
+				TRACE2("pttmp.x = %d, pttmp.y = %d\n", pttmp.x, pttmp.y);
 				if(!SetCursorPos(pttmp.x, pttmp.y))
 				{
 					TRACE0("Error SetCursorPos\n");

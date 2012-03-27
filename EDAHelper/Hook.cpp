@@ -34,6 +34,12 @@ typedef DWORD (CALLBACK * GetModuleBaseName_t)(
 					LPTSTR lpFilename,	// pointer to buffer to receive module path
 					DWORD nSize 		// size of buffer, in characters
 					);
+typedef BOOL (CALLBACK *GetModuleFileName_t)(
+					HANDLE hProcess,	  // handle to the process
+					HMODULE * lphModule,  // array to receive the module handles
+					LPTSTR lpFilename,	// pointer to buffer to receive module path
+					DWORD nSize 		// size of buffer, in characters
+					);
 typedef BOOL (CALLBACK *EnumProcessModules_t)(
 					HANDLE hProcess,	  // handle to the process
 					HMODULE * lphModule,  // array to receive the module handles
@@ -42,14 +48,15 @@ typedef BOOL (CALLBACK *EnumProcessModules_t)(
 					);//定义回调函数的地址 
 
 GetModuleBaseName_t pGetModuleBaseName;
+GetModuleFileName_t pGetModuleFileName;
 EnumProcessModules_t pEnumProcessModules;
 
+TCHAR	szProcessName[256];
 
 WindowType_t CheckProcess(void)
 {
 	static DWORD		pid;			//全部static是为了减少访问堆栈的时间
 	static HANDLE		hProcess;
-	TCHAR		szProcessName[256];
 	static TCHAR		szClassName[16];
 	static HMODULE		hMod;
 	static DWORD		cbNeeded;
@@ -66,7 +73,8 @@ WindowType_t CheckProcess(void)
 	hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
 	if (NULL != hProcess )
 	{
-		if ( pEnumProcessModules( hProcess, &hMod, sizeof(hMod), &cbNeeded) )
+// 		pGetModuleFileName(hProcess, NULL, szProcessName, 256);
+//  		if ( pEnumProcessModules( hProcess, &hMod, sizeof(hMod), &cbNeeded) )
 		{
 			if(pGetModuleBaseName( hProcess, hMod, szProcessName, 
 							   sizeof(szProcessName)/sizeof(TCHAR)))
@@ -250,9 +258,13 @@ BOOL HookInit()
 #ifdef UNICODE
 	pGetModuleBaseName =
 			(GetModuleBaseName_t)GetProcAddress(hPsDll, "GetModuleBaseNameW");
+	pGetModuleFileName =
+		(GetModuleFileName_t)GetProcAddress(hPsDll, "GetModuleFileNameExW");
 #else
 	pGetModuleBaseName =
 		(GetModuleBaseName_t)GetProcAddress(hPsDll, "GetModuleBaseNameA");
+	pGetModuleFileName =
+		(GetModuleFileName_t)GetProcAddress(hPsDll, "GetModuleFileNameExA");
 #endif
 	pEnumProcessModules =
 			(EnumProcessModules_t)GetProcAddress(hPsDll, "EnumProcessModules");

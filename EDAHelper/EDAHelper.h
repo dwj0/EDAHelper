@@ -41,6 +41,11 @@ public:
 	DECLARE_MESSAGE_MAP()
 };
 
+#ifdef	_DEBUG
+void ErrorTrace(LPTSTR lpszFunction);
+#else
+#define ErrorTrace()
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 
