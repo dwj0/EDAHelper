@@ -43,6 +43,7 @@
 #define IDC_SW_INFO                     1017
 #define IDC_RADIO2                      1019
 #define IDC_STATIC_HOME                 1020
+#define IDC_STATIC_FEEDBACK             1021
 
 // Next default values for new objects
 // 

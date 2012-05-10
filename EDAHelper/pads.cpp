@@ -5,6 +5,14 @@
 #include "winuser.h"
 #include <tlhelp32.h>
 #include <Windows.h>
+#include <Winuser.h>
+
+typedef BOOL (CALLBACK *PrintWindow_t)(
+									   HWND hwnd,               // Window to copy
+									   HDC  hdcBlt,             // HDC to print into
+									   UINT nFlags              // Optional flags
+									   );//定义回调函数的地址 
+PrintWindow_t		pPrintWindow;
 
 static const TCHAR FuncAppName[]=_T("Pads");
 
@@ -172,6 +180,8 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 						TRACE1("hbmCompatible Error Code = %d\n", GetLastError());
 					}
 					SelectObject(hDcCompatible, hbmCompatible);
+					/*pPrintWindow(hWnd, hDcCompatible, 1);
+					*/
 					BitBlt(
 						hDcCompatible,
 						0,
@@ -420,6 +430,11 @@ BOOL PadsInit(void)
 {
 	CWinApp *pApp = AfxGetApp();
 	gEnableConfig = pApp->GetProfileInt(CONFIG_ENTRY, FuncAppName, 0xFFFFFFFF);
+
+	HINSTANCE hPsDll = LoadLibrary(_T("USER32.DLL"));
+	pPrintWindow =
+		(PrintWindow_t)GetProcAddress(hPsDll, "PrintWindow");
+
 	return HookRegister(&PadsHook);
 }
 

@@ -213,18 +213,20 @@ _T("鼠标拖动时感觉明显变慢且部分操作不符合我的习惯而改写的\r\n")
 _T("    6. 本软件包括两部分, 一是HOOK(.\\src\\test3)实现鼠标钩子和模拟按键，")
 _T("二是主窗口(.\\src\\protel_increase), 安装钩子和显示帮助信息,部分代码源自")
 _T("www.vckbase.com,无版权,任何人可以根据自己的需要把他改了在其它软件如:Orcad, ")
-_T("PowerPCB等里运行,也可以让其自适应多个软件的操作,自己发挥吧, 如果你愿意,请EMAIL一份我.";)
+_T("PowerPCB等里运行,也可以让其自适应多个软件的操作,自己发挥吧, 如果你愿意,请EMAIL一份我.");
 
 static TCHAR	*AD = 
-_T("捐助不局限于金钱，建议也可以，吆喝也可以\r\n")
-_T("广告：\r\n")
-_T("    目前本人正穷困潦倒，且有闲暇，欲找点兼职养家糊口，专长如下：\r\n")
-_T("    1、精通单片机软、硬件开发，51、ARM等\r\n")
-_T("    2、精通嵌入式TCPIP协议栈\r\n")
-_T("    3、精通嵌入式USB-HOST协议栈(OHCI, EHCI)，基于ST的OS20和OS21开发，支持U盘、移动硬盘等\r\n")
-_T("    4、精通C、C++编程，小型数据库编程\r\n")
-_T("    5、精通LINUX内核编程\r\n")
-_T("    有诚意者请联系：QQ:126186, Email:spacexplorer@163.com");
+_T("有个这样一个故事与大家分享：\r\n")
+_T("    在美国得克萨斯州的一个风雪交加的夜晚，一位名叫克雷斯的年轻人因为汽车“抛锚”被困在郊外。")
+_T("正当他万分焦急的时候，有一位骑马的男子正巧经过这里。见此情景，这位男子二话没说便用马帮助克雷斯")
+_T("把汽车拉到了小镇上。 事后，当感激不尽的克雷斯拿出不菲的美钞对他表示酬谢时，这位男子说：“这不需")
+_T("要回报，但我要你给我一个承诺，当别人有困难的时候，你也要尽力帮助他人。”于是，在后来的日子里，克")
+_T("雷斯主动帮助了许许多多的人，并且每次都没有忘记转述那句同样的话给所有被他帮助的人。 许多年后的一天，")
+_T("克雷斯被突然暴发的洪水困在了一个孤岛上，一位勇敢的少年冒着被洪水吞噬的危险救了他。当他感谢少年的时候，")
+_T("少年竟然也说出了那句克雷斯曾说过无数次的话：“这不需要回报，但我要你给我一个承诺……”克雷斯的胸中")
+_T("顿时涌起了一股暖暖的激流：“原来，我穿起的这根关于爱的链条，周转了无数的人，最后经过少年还给了我，我")
+_T("一生做的这些好事，全都是为我自己做的！”当您有幸看到此消息时，请转发给自己的朋友亲人。我相信有更多的")
+_T("人需要我们的帮助，正义会传染，邪恶也是如此，为现在的别人做善事也是为了将来的自己。\r\n");
 
 CEDAHelperDlg::CEDAHelperDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CEDAHelperDlg::IDD, pParent)
@@ -279,7 +281,7 @@ BOOL CEDAHelperDlg::OnInitDialog()
 	// Add "About..." menu item to system menu.
 
 	GetDlgItem(IDC_EDIT_DESC)->SetWindowText(AppDesc);
-	_stprintf(szSoftwareInfo, _T("EDAHelper(V%s %s) cc QQ:126186, 群号:74306669, Email:spacexplorer@163.com"), _T(CURRENT_VERSION), _T(__DATE__));
+	_stprintf(szSoftwareInfo, _T("EDAHelper(V%s %s), QQ群:74306669, Email:spacexplorer@163.com"), _T(CURRENT_VERSION), _T(__DATE__));
 	GetDlgItem(IDC_SW_INFO)->SetWindowText(szSoftwareInfo);
 	if(CheckAutorunStats())
 	{
@@ -315,6 +317,7 @@ BOOL CEDAHelperDlg::OnInitDialog()
 		DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily 
 		_T("Arial"));
 	GetDlgItem(IDC_STATIC_HOME)->SetFont(pFont);
+	GetDlgItem(IDC_STATIC_FEEDBACK)->SetFont(pFont);
 	// TODO: Add extra initialization here
     m_tnid.cbSize=sizeof(NOTIFYICONDATA);        //定义结构的成员变量
     m_tnid.hWnd=this->m_hWnd;
@@ -526,12 +529,12 @@ void CEDAHelperDlg::OnButtonHelp()
 	static BOOL HelpNotAd = FALSE;
 	if(HelpNotAd)
 	{
-		GetDlgItem(IDC_BUTTON_HELP)->SetWindowText(_T("广告"));
+//		GetDlgItem(IDC_BUTTON_HELP)->SetWindowText(_T("广告"));
 		GetDlgItem(IDC_EDIT_DESC)->SetWindowText(AppDesc);
 	}
 	else
 	{
-		GetDlgItem(IDC_BUTTON_HELP)->SetWindowText(_T("帮助"));
+//		GetDlgItem(IDC_BUTTON_HELP)->SetWindowText(_T("帮助"));
 		GetDlgItem(IDC_EDIT_DESC)->SetWindowText(AD);
 	}
 
@@ -586,7 +589,11 @@ HBRUSH CEDAHelperDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	{
 		CString ss;
 		pWnd->GetWindowText(ss);
-		if(memcmp(ss,_T("www.edahelper.com"),12) == 0)
+		if(memcmp(ss,_T("查看更新"),8) == 0)
+		{
+			pDC->SetTextColor(RGB(0,0,254));
+		}
+		if(memcmp(ss,_T("论坛反馈"),8) == 0)
 		{
 			pDC->SetTextColor(RGB(0,0,254));
 		}
@@ -613,6 +620,18 @@ BOOL CEDAHelperDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 		return TRUE; 
 	}
 	
+	pStatic=GetDlgItem(IDC_STATIC_FEEDBACK);
+	pStatic->GetWindowRect(rcStatic);
+	if(rcStatic.PtInRect(ptCursor))
+	{
+		//change cursor to hand
+		HCURSOR hHandCursor = AfxGetApp()->LoadCursor(IDC_CURSOR_HAND);
+		if(hHandCursor)
+			SetCursor(hHandCursor); 
+		
+		return TRUE; 
+	}
+	
 	return CDialog::OnSetCursor(pWnd, nHitTest, message);
 }
 
@@ -620,18 +639,27 @@ void CEDAHelperDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	CRect rcStatic; 
 	CPoint ptCursor;
-	CString str;
+	CString str = _T("www.jyxtec.com/edahelper");
 	
 	CWnd *pStatic=GetDlgItem(IDC_STATIC_HOME);
 	pStatic->GetWindowRect(rcStatic);
 	GetCursorPos(&ptCursor);
-	GetDlgItem(IDC_STATIC_HOME)->GetWindowText(str);
 	
 	if(rcStatic.PtInRect(ptCursor))
 	{
 		ShellExecute(m_hWnd, NULL, str, NULL,NULL, SW_SHOWMAXIMIZED);
 	}
+
+	pStatic=GetDlgItem(IDC_STATIC_FEEDBACK);
+	pStatic->GetWindowRect(rcStatic);
+	GetCursorPos(&ptCursor);
 	
+	str = _T("http://www.jyxtec.com/forum/forum.php?mod=forumdisplay&fid=37");
+	if(rcStatic.PtInRect(ptCursor))
+	{
+		ShellExecute(m_hWnd, NULL, str, NULL,NULL, SW_SHOWMAXIMIZED);
+	}
+
 	CDialog::OnLButtonUp(nFlags, point);
 }
 
