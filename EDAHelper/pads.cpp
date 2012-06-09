@@ -378,33 +378,36 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 				CRect	Rect;
 				POINT	pttmp;
 				rbtnMove = FALSE;
-				GetClientRect(hWnd, &Rect);
-
-				keybd_event(VK_MBUTTON, 1, 0, 0);
-				lParam = MAKELPARAM(Rect.CenterPoint().x - dist_x, Rect.CenterPoint().y - dist_y);
-				PostMessage(hWnd, WM_MBUTTONDOWN, MK_MBUTTON, lParam);
-				PostMessage(hWnd, WM_MBUTTONUP, MK_MBUTTON, lParam);
-				keybd_event(VK_MBUTTON, 1, KEYEVENTF_KEYUP, 0);
-
-				pttmp.x = CurPosPre.x + dist_x;
-				pttmp.y = CurPosPre.y + dist_y;
-				TRACE2("pttmp.x = %d, pttmp.y = %d\n", pttmp.x, pttmp.y);
-				if(!SetCursorPos(pttmp.x, pttmp.y))
+				if(gEnableConfig & PADS_RIGBTN_DRAG_SMOOTH)
 				{
-					TRACE0("Error SetCursorPos\n");
-				}
-
-				if (!DeleteObject(hbmCompatible))
-				{
-					TRACE1("deleteobject error %d\n", GetLastError());
-				}
-				if (!DeleteDC(hDcCompatible))
-				{
-					TRACE1("DeleteDC error %d\n", GetLastError());
-				}
-				if (!ReleaseDC(hWnd, hDc))
-				{
-					TRACE1("ReleaseDC error %d\n", GetLastError());
+					GetClientRect(hWnd, &Rect);
+					
+					keybd_event(VK_MBUTTON, 1, 0, 0);
+					lParam = MAKELPARAM(Rect.CenterPoint().x - dist_x, Rect.CenterPoint().y - dist_y);
+					PostMessage(hWnd, WM_MBUTTONDOWN, MK_MBUTTON, lParam);
+					PostMessage(hWnd, WM_MBUTTONUP, MK_MBUTTON, lParam);
+					keybd_event(VK_MBUTTON, 1, KEYEVENTF_KEYUP, 0);
+					
+					pttmp.x = CurPosPre.x + dist_x;
+					pttmp.y = CurPosPre.y + dist_y;
+					TRACE2("pttmp.x = %d, pttmp.y = %d\n", pttmp.x, pttmp.y);
+					if(!SetCursorPos(pttmp.x, pttmp.y))
+					{
+						TRACE0("Error SetCursorPos\n");
+					}
+					
+					if (!DeleteObject(hbmCompatible))
+					{
+						TRACE1("deleteobject error %d\n", GetLastError());
+					}
+					if (!DeleteDC(hDcCompatible))
+					{
+						TRACE1("DeleteDC error %d\n", GetLastError());
+					}
+					if (!ReleaseDC(hWnd, hDc))
+					{
+						TRACE1("ReleaseDC error %d\n", GetLastError());
+					}
 				}
 
 				return TRUE;
