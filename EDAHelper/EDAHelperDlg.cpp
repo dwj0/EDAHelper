@@ -22,7 +22,7 @@ static char THIS_FILE[] = __FILE__;
 // CEDAHelperDlg dialog
 
 static TCHAR	*AppDesc = 
-_T("2.1.12说明：\r\n")
+_T("2.1.13说明：\r\n")
 _T("    本软件是多种EDA软件的鼠标增强工具，绿色单文件，支持Win9x/NT/2000/XP/WIN7，其中WIN7需要以管理员模式运行，")
 _T("另外，Win9x需要编译成非UNICODE版本，有需要的用户可发邮件给我索取，支持protel99se，DXP(AD)，PADS，OrCAD的capture、")
 _T("Cam350、Saber、PC Schematic、Allegro、CircuitCAM,并且对每个软件的功能都可设置，用户可根据使用习惯打开或者关闭功能。\r\n")
@@ -83,6 +83,8 @@ _T("\r\n更新历史：\r\n")
 _T("2.1.13：\r\n")
 _T("    1、修改PADS右键拖动之传统模式的BUG\r\n")
 _T("    2、大大提高运行效率，解决部分用户在QQ窗口移动鼠标时会非常慢的情况\r\n")
+_T("    3、修改在allegro中滚动鼠标时下面命令窗口有时会出现F10,F11字样的BUG(可能)\r\n")
+_T("    4、修改CAM350右键拖动功能，使可平滑移动\r\n")
 _T("2.1.12：\r\n")
 _T("    1、修改程序启动24小时后再检测更新出错的问题\r\n")
 _T("    2、再次修改自动运行有时候失败的问题\r\n")
@@ -334,7 +336,14 @@ BOOL CEDAHelperDlg::OnInitDialog()
 
 	Shell_NotifyIcon(NIM_ADD,&m_tnid);
 
-	PostMessage(WM_SYSCOMMAND,SC_MINIMIZE,0);
+	if(CheckFirstRun())
+	{
+		SetWindowText(_T("EDAHelper(本版首次运行，为充分发挥软件性能，请仔细阅读使用说明和更新记录)"));
+	}
+	else
+	{
+		PostMessage(WM_SYSCOMMAND,SC_MINIMIZE,0);
+	}
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -378,6 +387,8 @@ HCURSOR CEDAHelperDlg::OnQueryDragIcon()
 void CEDAHelperDlg::OnCheckAutorun() 
 {
 	HKEY hKey;
+	CWinApp *pApp = AfxGetApp();
+
 	CString str = _T("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
 	if (ERROR_SUCCESS != RegCreateKey(HKEY_CURRENT_USER, str, &hKey))
 	{
@@ -666,3 +677,19 @@ void CEDAHelperDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	CDialog::OnLButtonUp(nFlags, point);
 }
 
+
+BOOL CEDAHelperDlg::CheckFirstRun()
+{
+	CWinApp *pApp = AfxGetApp();
+
+	CString szFirstRun = pApp->GetProfileString(CONFIG_ENTRY, _T("FirstRun"));
+	if(szFirstRun.Compare(_T(CURRENT_VERSION)))
+	{
+		pApp->WriteProfileString(CONFIG_ENTRY, _T("FirstRun"), _T(CURRENT_VERSION));
+		return TRUE;
+	}
+	else
+	{
+		return FALSE;
+	}
+}

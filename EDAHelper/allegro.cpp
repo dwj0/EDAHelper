@@ -58,9 +58,10 @@ LRESULT AllegroProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 	}
 	{
 
-		POINT	pt;
-		GetCursorPos(&pt);
-		HWND hWnd = WindowFromPoint(pt);
+//		POINT	pt;
+//		GetCursorPos(&pt);
+		
+		HWND hWnd = GetForegroundWindow();//WindowFromPoint(pt);
 		if((gEnableConfig & ALLEGRO_MIDBTN_ZOOM) && (wParam == WM_MOUSEWHEEL))
 		{
 			if((GetAsyncKeyState(VK_CONTROL) || GetAsyncKeyState(VK_SHIFT) || GetAsyncKeyState(VK_MENU)) && 0x8000)

@@ -17,6 +17,7 @@ class CEDAHelperDlg : public CDialog
 {
 // Construction
 public:
+	BOOL CheckFirstRun();
 	CEDAHelperDlg(CWnd* pParent = NULL);	// standard constructor
 	NOTIFYICONDATA m_tnid;
 	BOOL	CheckUpdateStats();

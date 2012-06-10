@@ -31,10 +31,10 @@ static VOID __stdcall Cam350_TimerProc(HWND hwnd,
 						ULONG dwTime
 						)
 {
-	if(idEvent == 100)
+	if(idEvent == 101)
 	{
-		TRACE0("sdlfkajsdlfkjasd\n");
-		KillTimer(NULL, 100);
+		TRACE0("test\n");
+		KillTimer(NULL, 101);
 	}
 }
 LRESULT Cam350Proc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
@@ -301,7 +301,7 @@ LRESULT Cam350Proc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 				pttmp.x = CurPosPre.x + dist_x;
 				pttmp.y = CurPosPre.y + dist_y;
 				TRACE2("pttmp.x = %d, pttmp.y = %d\n", pttmp.x, pttmp.y);
-				SetTimer(NULL, 100, 1000, Cam350_TimerProc);
+//				SetTimer(NULL, 101, 1000, Cam350_TimerProc);
 				if(!SetCursorPos(pttmp.x, pttmp.y))
 				{
 					TRACE0("Error SetCursorPos\n");
