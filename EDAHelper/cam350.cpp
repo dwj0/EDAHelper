@@ -8,6 +8,11 @@
 static const TCHAR FuncAppName[]=_T("Cam350");
 
 static UINT gEnableConfig;
+static HDC	hDc, hDcCompatible;
+static HBITMAP hbmCompatible;
+static bool rbtnDragFlag = FALSE;
+static int dist_x, dist_y;		// 右键移动的时候使用，表现移动的距离
+static CRect	Rect;
 
 UINT	Cam350GetConf(void)
 {
@@ -20,7 +25,18 @@ void	Cam350SetConf(UINT value)
 	gEnableConfig = value;
 	pApp->WriteProfileInt(CONFIG_ENTRY, FuncAppName, gEnableConfig);
 }
-
+static VOID __stdcall Cam350_TimerProc(HWND hwnd,
+						UINT uMsg,
+						UINT idEvent,
+						ULONG dwTime
+						)
+{
+	if(idEvent == 100)
+	{
+		TRACE0("sdlfkajsdlfkjasd\n");
+		KillTimer(NULL, 100);
+	}
+}
 LRESULT Cam350Proc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 {
 	if(!(gEnableConfig & CAM350_GLOBAL_ENABLE))
@@ -40,41 +56,114 @@ LRESULT Cam350Proc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 			GetCursorPos(&pt);
 			hWnd = WindowFromPoint(pt);
 
-			distance = pMSLLHook->pt.x - CurPosPre.x;
-			while( abs(distance) > step)
+			if(1)
 			{
-				if(distance > 0)
+				if (FALSE == rbtnDragFlag)
 				{
-					PostMessage(hWnd, WM_HSCROLL, SB_LINELEFT, NULL);
+					dist_x = 0;
+					dist_y = 0;
+					rbtnDragFlag = TRUE;
+
+					hDc = GetDC(hWnd);
+					GetClientRect(hWnd, &Rect);
+					hDcCompatible = CreateCompatibleDC(hDc);
+					if(!hDcCompatible)
+					{
+						TRACE1("hDcCompatible Error Code = %d\n", GetLastError());
+					}
+					hbmCompatible = CreateCompatibleBitmap(hDc, 
+						Rect.right - Rect.left,
+						Rect.bottom - Rect.top);
+					if(!hbmCompatible)
+					{
+						TRACE1("hbmCompatible Error Code = %d\n", GetLastError());
+					}
+					SelectObject(hDcCompatible, hbmCompatible);
+					/*pPrintWindow(hWnd, hDcCompatible, 1);
+					*/
+					BitBlt(
+						hDcCompatible,
+						0,
+						0,
+						Rect.Width(),
+						Rect.Height(),
+						hDc,
+						0,
+						0,
+						SRCCOPY);
+				}
+				dist_x += pMSLLHook->pt.x - CurPosPre.x;
+				dist_y += pMSLLHook->pt.y - CurPosPre.y;
+				BitBlt(
+					hDc,
+					dist_x,
+					dist_y,
+					Rect.Width(),
+					Rect.Height(),
+					hDcCompatible,
+					0,
+					0,
+ 					SRCCOPY);
+
+				CBrush	hbr;
+				CRect	rcTmp = Rect;
+				hbr.CreateSolidBrush(0);
+				if(dist_x > 0)
+				{
+					rcTmp.right = rcTmp.left + dist_x; 
 				}
 				else
 				{
-					PostMessage(hWnd, WM_HSCROLL, SB_LINERIGHT, NULL);
+					rcTmp.left = rcTmp.right + dist_x;
+				}
+				FillRect(hDc, &rcTmp, (HBRUSH)hbr);
+				rcTmp = Rect;
+				if(dist_y > 0)
+				{
+					rcTmp.bottom = rcTmp.top + dist_y; 
+				}
+				else
+				{
+					rcTmp.top = rcTmp.bottom + dist_y;
+				}
+				FillRect(hDc, &rcTmp, (HBRUSH)hbr);
+
+				rbtnMove = TRUE;
+				return TRUE;
+			}
+			else
+			{
+				distance = pMSLLHook->pt.x - CurPosPre.x;
+				while( abs(distance) > step)
+				{
+					if(distance > 0)
+					{
+						PostMessage(hWnd, WM_HSCROLL, SB_LINELEFT, NULL);
+					}
+					else
+					{
+						PostMessage(hWnd, WM_HSCROLL, SB_LINERIGHT, NULL);
+					}
+
+					CurPosPre.x = pMSLLHook->pt.x;
+					rbtnMove = TRUE;
+					distance = distance > 0 ? distance - step: distance + step;
+				}
+				distance = pMSLLHook->pt.y - CurPosPre.y;
+				while(abs(distance) > step)
+				{
+					if(distance > 0)
+						PostMessage(hWnd, WM_VSCROLL, SB_LINEUP, NULL);
+					else
+						PostMessage(hWnd, WM_VSCROLL, SB_LINEDOWN, NULL);
+
+					CurPosPre.y = pMSLLHook->pt.y;
+					rbtnMove = TRUE;
+					distance = distance > 0 ? distance - step: distance + step;
 				}
 
-				if(nWinType & (WIN_PADS_PCB | WIN_PADS_LOGIC | WIN_PADS_ROUTER))
-				{
-					PostMessage(hWnd, WM_KEYDOWN, VK_END, 0);
-					PostMessage(hWnd, WM_KEYUP, VK_END, 0);
-				}	
-				CurPosPre.x = pMSLLHook->pt.x;
-				rbtnMove = TRUE;
-				distance = distance > 0 ? distance - step: distance + step;
+				return CallNextHookEx(hkb, nCode, wParam, lParam );
 			}
-			distance = pMSLLHook->pt.y - CurPosPre.y;
-			while(abs(distance) > step)
-			{
-				if(distance > 0)
-					PostMessage(hWnd, WM_VSCROLL, SB_LINEUP, NULL);
-				else
-					PostMessage(hWnd, WM_VSCROLL, SB_LINEDOWN, NULL);
-
-				CurPosPre.y = pMSLLHook->pt.y;
-				rbtnMove = TRUE;
-				distance = distance > 0 ? distance - step: distance + step;
-			}
-
-			return CallNextHookEx(hkb, nCode, wParam, lParam );
 		}
 		else if(mbtnDown)
 		{
@@ -103,16 +192,6 @@ LRESULT Cam350Proc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 			return TRUE;
 
 		}
-// 		else if((gEnableConfig & CAM350_MIDBTN_FITALL) && (wParam == WM_MBUTTONDOWN))
-// 		{
-// 			return TRUE;
-// 		}
-// 		else if((gEnableConfig & CAM350_MIDBTN_FITALL) && (wParam == WM_MBUTTONUP))
-// 		{
-// 			PostMessage(hWnd, WM_KEYDOWN, VK_HOME, 0);
-// 			PostMessage(hWnd, WM_KEYUP, VK_HOME, 0);
-// 			return TRUE;
-// 		}
 		else if((gEnableConfig & (CAM350_MIDBTN_FITALL | CAM350_MIDBTN_MOVE)) && (wParam == WM_MBUTTONDOWN))
 		{
 			mbtnMove = FALSE;
@@ -200,6 +279,7 @@ LRESULT Cam350Proc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 		{
 			rbtnDown = TRUE;
 			CurPosPre = pMSLLHook->pt;
+			rbtnDragFlag = FALSE;
 			return TRUE;
 		}
 		else if((gEnableConfig & CAM350_RIGBTN_DRAG) && (wParam == WM_RBUTTONUP))
@@ -207,7 +287,38 @@ LRESULT Cam350Proc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 			rbtnDown = FALSE;
 			if(rbtnMove)
 			{
+				CRect	Rect;
+				POINT	pttmp;
 				rbtnMove = FALSE;
+				GetClientRect(hWnd, &Rect);
+					
+				keybd_event(VK_MBUTTON, 1, 0, 0);
+				lParam = MAKELPARAM(Rect.CenterPoint().x - dist_x, Rect.CenterPoint().y - dist_y);
+				PostMessage(hWnd, WM_MBUTTONDOWN, MK_MBUTTON, lParam);
+				PostMessage(hWnd, WM_MBUTTONUP, MK_MBUTTON, lParam);
+				keybd_event(VK_MBUTTON, 1, KEYEVENTF_KEYUP, 0);
+					
+				pttmp.x = CurPosPre.x + dist_x;
+				pttmp.y = CurPosPre.y + dist_y;
+				TRACE2("pttmp.x = %d, pttmp.y = %d\n", pttmp.x, pttmp.y);
+				SetTimer(NULL, 100, 1000, Cam350_TimerProc);
+				if(!SetCursorPos(pttmp.x, pttmp.y))
+				{
+					TRACE0("Error SetCursorPos\n");
+				}
+					
+				if (!DeleteObject(hbmCompatible))
+				{
+					TRACE1("deleteobject error %d\n", GetLastError());
+				}
+				if (!DeleteDC(hDcCompatible))
+				{
+					TRACE1("DeleteDC error %d\n", GetLastError());
+				}
+				if (!ReleaseDC(hWnd, hDc))
+				{
+					TRACE1("ReleaseDC error %d\n", GetLastError());
+				}
 				return TRUE;
 			}
 
