@@ -104,6 +104,10 @@ WindowType_t CheckProcess(void)
 					{
 						RetCode = WIN_PROTEL_PCB;
 					}
+					else if(!_tcsncmp(szClassName, _T("ServerWindowForm"), 10))
+					{
+						RetCode = WIN_PROTEL_PCB;
+					}
 //					else if(!strncmp(szClassName, "msctls_statusba", 10))
 					{
 //						TRACE1("szClassName = %s\n", szClassName);
