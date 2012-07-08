@@ -82,6 +82,7 @@ _T("代码获取方法：\"svn checkout https://dbghelper.googlecode.com/svn/EDAHelper\
 _T("\r\n更新历史：\r\n")
 _T("2.1.14：\r\n")
 _T("    1、修改protel99se里3D模式时缩放等失效的问题\r\n")
+_T("    2、修改DXP里legacy 3D模式时缩放等失效的问题\r\n")
 _T("2.1.13：\r\n")
 _T("    1、修改PADS右键拖动之传统模式的BUG\r\n")
 _T("    2、大大提高运行效率，解决部分用户在QQ窗口移动鼠标时会非常慢的情况\r\n")
@@ -288,7 +289,7 @@ BOOL CEDAHelperDlg::OnInitDialog()
 	// Add "About..." menu item to system menu.
 
 	GetDlgItem(IDC_EDIT_DESC)->SetWindowText(AppDesc);
-	_stprintf(szSoftwareInfo, _T("EDAHelper(V%s %s), QQ群:74306669, Email:spacexplorer@163.com"), _T(CURRENT_VERSION), _T(__DATE__));
+	_stprintf(szSoftwareInfo, _T("EDAHelper(V%s %s), QQ群:74306669, Email:126186@qq.com"), _T(CURRENT_VERSION), _T(__DATE__));
 	GetDlgItem(IDC_SW_INFO)->SetWindowText(szSoftwareInfo);
 	if(CheckAutorunStats())
 	{

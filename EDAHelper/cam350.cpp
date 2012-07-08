@@ -92,8 +92,8 @@ LRESULT Cam350Proc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 						0,
 						SRCCOPY);
 				}
-				dist_x += pMSLLHook->pt.x - CurPosPre.x;
-				dist_y += pMSLLHook->pt.y - CurPosPre.y;
+				dist_x = pMSLLHook->pt.x - CurPosPre.x;
+				dist_y = pMSLLHook->pt.y - CurPosPre.y;
 				BitBlt(
 					hDc,
 					dist_x,
@@ -129,6 +129,7 @@ LRESULT Cam350Proc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 				FillRect(hDc, &rcTmp, (HBRUSH)hbr);
 
 				rbtnMove = TRUE;
+				return CallNextHookEx(hkb, nCode, wParam, lParam );
 				return TRUE;
 			}
 			else
@@ -292,11 +293,11 @@ LRESULT Cam350Proc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 				rbtnMove = FALSE;
 				GetClientRect(hWnd, &Rect);
 					
-				keybd_event(VK_MBUTTON, 1, 0, 0);
+//				keybd_event(VK_MBUTTON, 1, 0, 0);
 				lParam = MAKELPARAM(Rect.CenterPoint().x - dist_x, Rect.CenterPoint().y - dist_y);
 				PostMessage(hWnd, WM_MBUTTONDOWN, MK_MBUTTON, lParam);
 				PostMessage(hWnd, WM_MBUTTONUP, MK_MBUTTON, lParam);
-				keybd_event(VK_MBUTTON, 1, KEYEVENTF_KEYUP, 0);
+//				keybd_event(VK_MBUTTON, 1, KEYEVENTF_KEYUP, 0);
 					
 				pttmp.x = CurPosPre.x + dist_x;
 				pttmp.y = CurPosPre.y + dist_y;

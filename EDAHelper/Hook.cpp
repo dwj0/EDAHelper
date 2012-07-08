@@ -139,6 +139,10 @@ WindowType_t CheckProcess(void)
 					{
 						RetCode = WIN_DXP_PCB;
 					}
+					else if(!_tcsncmp(szClassName, _T("TPCB3DWindow"), 10))
+					{
+						RetCode = WIN_DXP_PCB;
+					}
 				}
 				else if((_tcsstr(szProcessName, _T("powerlogic")) || _tcsstr(szProcessName, _T("powerl~1.exe"))) && !_tcsncmp(szClassName, _T("AfxFrameOrView"), 14))
 				{
