@@ -131,6 +131,10 @@ WindowType_t CheckProcess(void)
 					{
 						RetCode = WIN_DXP_SCH;
 					}
+					if (!_tcsncmp(szClassName, _T("TPagePreviewPanel"), 10))
+					{
+						RetCode = WIN_DXP_SCH;
+					}
 					else if(!_tcsncmp(szClassName, _T("View_Graphical"), 3))
 					{
 						RetCode = WIN_DXP_PCB;
