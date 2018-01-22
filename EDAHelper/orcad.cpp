@@ -49,7 +49,7 @@ LRESULT OrcadProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 				void *	Pointer;
 				HANDLE	hProcess;
 				TCHAR	status_buf[64];
-				ULONG	NumberOfBytesRead;
+				SIZE_T	NumberOfBytesRead;
 				int		scale;
 
 				hStatusBar = GetDlgItem(GetAncestor(hWnd, GA_ROOT), AFX_IDW_STATUS_BAR);

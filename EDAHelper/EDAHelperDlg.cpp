@@ -22,7 +22,7 @@ static char THIS_FILE[] = __FILE__;
 // CEDAHelperDlg dialog
 
 static TCHAR	*AppDesc = 
-_T("2.1.13说明：\r\n")
+_T("2.1.14说明：\r\n")
 _T("    本软件是多种EDA软件的鼠标增强工具，绿色单文件，支持Win9x/NT/2000/XP/WIN7，其中WIN7需要以管理员模式运行，")
 _T("另外，Win9x需要编译成非UNICODE版本，有需要的用户可发邮件给我索取，支持protel99se，DXP(AD)，PADS，OrCAD的capture、")
 _T("Cam350、Saber、PC Schematic、Allegro、CircuitCAM,并且对每个软件的功能都可设置，用户可根据使用习惯打开或者关闭功能。\r\n")
@@ -266,7 +266,7 @@ BEGIN_MESSAGE_MAP(CEDAHelperDlg, CDialog)
 	ON_WM_CLOSE()
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON_HELP, OnButtonHelp)
-	ON_WM_TIMER()
+//	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_PROPERTY, OnProperties)
 	ON_WM_CTLCOLOR()
 	ON_WM_SETCURSOR()
