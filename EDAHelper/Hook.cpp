@@ -125,7 +125,7 @@ WindowType_t CheckProcess(void)
 						RetCode = WIN_SABER_SKETCH;
 					}
 				}
-				else if(_tcsstr(szProcessName, _T("dxp")))
+				else if(_tcsstr(szProcessName, _T("dxp")) ||_tcsstr(szProcessName, _T("x2")))
 				{
 					if (!_tcsncmp(szClassName, _T("TdxBarSubMenuCo"), 10))
 					{
