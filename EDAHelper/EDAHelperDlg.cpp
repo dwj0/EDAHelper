@@ -22,11 +22,12 @@ static char THIS_FILE[] = __FILE__;
 // CEDAHelperDlg dialog
 
 static TCHAR	*AppDesc = 
-_T("2.1.14说明：\r\n")
+_T("2.1.14(11周年纪念版)说明：\r\n")
 _T("    本软件是多种EDA软件的鼠标增强工具，绿色单文件，支持Win9x/NT/2000/XP/WIN7，其中WIN7需要以管理员模式运行，")
 _T("另外，Win9x需要编译成非UNICODE版本，有需要的用户可发邮件给我索取，支持protel99se，DXP(AD)，PADS，OrCAD的capture、")
 _T("Cam350、Saber、PC Schematic、Allegro、CircuitCAM,并且对每个软件的功能都可设置，用户可根据使用习惯打开或者关闭功能。\r\n")
 _T("    软件启动时和启动后每隔24小时检查更新，如果系统能上网，有更新时会有增量更新信息。\r\n")
+_T("\r\n    代码获取方法：\"https://gitee.com/spacexplorer/EDAHelper\"\r\n")
 _T("\r\n针对protel99se, DXP,Altium Designer：\r\n")
 _T("    1. 向上滚动滚轮 --> 放大，相当于PageUp(不能改掉软件原来的快捷键，否则就不灵了)\r\n")
 _T("    2. 向下滚动滚轮 --> 缩小，相当于PageDown(不能改掉软件原来的快捷键，否则就不灵了)\r\n")
@@ -80,11 +81,13 @@ _T("\r\n")
 _T("代码获取方法：\"svn checkout https://dbghelper.googlecode.com/svn/EDAHelper\"\r\n")
 
 _T("\r\n更新历史：\r\n")
-_T("2.1.14b：\r\n")
+_T("2.1.14(20180325)：\r\n")
 _T("    1、修改protel99se里3D模式时缩放等失效的问题\r\n")
 _T("    2、修改DXP里legacy 3D模式时缩放等失效的问题\r\n")
 _T("    3、增加DXP里打印预览时的中键缩放\r\n")
 _T("    4、增加AD18的支持\r\n")
+_T("    5、支持orcad17(64位版本)\r\n")
+_T("    6、代码放到国内服务器，让所有人都可以方便、免费下载\r\n")
 _T("2.1.13：\r\n")
 _T("    1、修改PADS右键拖动之传统模式的BUG\r\n")
 _T("    2、大大提高运行效率，解决部分用户在QQ窗口移动鼠标时会非常慢的情况\r\n")
@@ -579,7 +582,7 @@ void CEDAHelperDlg::OnProperties()
 	// handler.  In order to actually use the property sheet,
 	// you will need to associate this function with a control
 	// in your project such as a menu item or tool bar button.
-	int	rc = propSheet.DoModal();
+	INT_PTR	rc = propSheet.DoModal();
 
 	if(rc == IDOK)
 	{
@@ -658,7 +661,7 @@ void CEDAHelperDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	CRect rcStatic; 
 	CPoint ptCursor;
-	CString str = _T("www.jyxtec.com/edahelper");
+	CString str = _T("www.szbaijie.cn/edahelper");
 	
 	CWnd *pStatic=GetDlgItem(IDC_STATIC_HOME);
 	pStatic->GetWindowRect(rcStatic);
@@ -673,7 +676,7 @@ void CEDAHelperDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	pStatic->GetWindowRect(rcStatic);
 	GetCursorPos(&ptCursor);
 	
-	str = _T("http://www.jyxtec.com/forum/forum.php?mod=forumdisplay&fid=37");
+	str = _T("http://bbs.eeworld.com.cn/forum-220-1.html");
 	if(rcStatic.PtInRect(ptCursor))
 	{
 		ShellExecute(m_hWnd, NULL, str, NULL,NULL, SW_SHOWMAXIMIZED);
