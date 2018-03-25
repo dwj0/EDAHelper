@@ -91,14 +91,24 @@ LRESULT ProtelProc(int nWinType, int nCode,WPARAM wParam,LPARAM lParam)
 			{
 				return CallNextHookEx(hkb, nCode, wParam, lParam );
 			}
-#if 1
+#if 0
+			HWND hWnd = WindowFromPoint(pt);
 			TRACE1("pMSLLHook->mouseData = %x\n", pMSLLHook->mouseData);
+			//PostMessage(hWnd, WM_KEYDOWN, VK_CONTROL, 0);
 			keybd_event(VK_CONTROL, 0,  0, 0);
 			PostMessage(hWnd, 
 				WM_MOUSEWHEEL,
 				(pMSLLHook->mouseData | MK_CONTROL),
 				((pMSLLHook->pt.y << 16) + pMSLLHook->pt.x));
 			keybd_event(VK_CONTROL, 0,  KEYEVENTF_KEYUP, 0);
+			//PostMessage(hWnd, WM_KEYUP, VK_CONTROL, 0);
+			
+		//	keybd_event(VK_CONTROL, 0,  0, 0);
+		//	PostMessage(hWnd, 
+		//		WM_MOUSEWHEEL,
+		//		(pMSLLHook->mouseData | MK_CONTROL),
+		//		((pMSLLHook->pt.y << 16) + pMSLLHook->pt.x));
+		//	keybd_event(VK_CONTROL, 0,  KEYEVENTF_KEYUP, 0);
 #else
 			if((short)HIWORD(pMSLLHook->mouseData) > 0)
 			{
@@ -108,8 +118,9 @@ LRESULT ProtelProc(int nWinType, int nCode,WPARAM wParam,LPARAM lParam)
 			{
 				PostMessage(hWnd, WM_KEYDOWN, 0x22, 0);
 			}
-			return TRUE;
 #endif
+			return TRUE;
+
 		}
 		else if((gEnableConfig & (PROTEL_MIDBTN_SWITCH | PROTEL_MIDBTN_PLACE | PROTEL_MIDBTN_MOVE)) && (wParam == WM_MBUTTONDOWN))
 		{

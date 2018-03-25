@@ -83,7 +83,7 @@ WindowType_t CheckProcess(void)
 				_tcslwr(szProcessName);
 				GetClassName(hWnd, szClassName, 16);
 				nStyle = GetWindowLong(hWnd, GWL_STYLE);
-				TRACE1("nStyle = 0x%x\n", nStyle);
+//				TRACE1("nStyle = 0x%x\n", nStyle);
 
 				if(_tcsstr(szProcessName, _T("client99se")) || _tcsstr(szProcessName, _T("quickpcb")))
 				{
