@@ -122,7 +122,7 @@ LRESULT ProtelProc(int nWinType, int nCode,WPARAM wParam,LPARAM lParam)
 			return TRUE;
 
 		}
-		else if((gEnableConfig & (PROTEL_MIDBTN_SWITCH | PROTEL_MIDBTN_PLACE | PROTEL_MIDBTN_MOVE)) && (wParam == WM_MBUTTONDOWN))
+		else if((gEnableConfig & (PROTEL_MIDBTN_SWITCH | PROTEL_MIDBTN_PLACE | PROTEL_MIDBTN_MOVE)) && ( wParam == WM_MBUTTONDOWN))
 		{
 			mbtnMove = FALSE;
 			mbtnDown = TRUE;
@@ -136,10 +136,30 @@ LRESULT ProtelProc(int nWinType, int nCode,WPARAM wParam,LPARAM lParam)
 				return CallNextHookEx(hkb, nCode, wParam, lParam );
 			}
 		}
-		else if((gEnableConfig & (PROTEL_MIDBTN_SWITCH | PROTEL_MIDBTN_PLACE | PROTEL_MIDBTN_MOVE)) && (wParam == WM_MBUTTONUP))
+		else if((gEnableConfig & (PROTEL_MIDBTN_SWITCH | PROTEL_MIDBTN_PLACE | PROTEL_MIDBTN_MOVE)) && (wParam == WM_KEYDOWN ||wParam == WM_MBUTTONUP))
 		{
 			mbtnDown = FALSE;
 			GetCursorPos(&pt_cur);
+			if(wParam == WM_KEYDOWN)
+			{
+#ifdef	AD_C_SWITCH
+				PKBDLLHOOKSTRUCT pKBDHook = (PKBDLLHOOKSTRUCT)lParam;
+
+				if((gEnableConfig & PROTEL_MIDBTN_SWITCH) && ((pKBDHook->vkCode == 'C')))
+				{
+					PostMessage(hWnd, WM_KEYDOWN, 106, 0);
+					PostMessage(hWnd, WM_KEYUP, 106, 0);
+					if(nWinType & (WIN_PROTEL_PCB | WIN_PROTEL_SCH))
+					{
+						PostMessage(hWnd, WM_KEYDOWN, VK_END, 0);
+					}
+				}
+				else
+#endif
+					return CallNextHookEx(hkb, nCode, wParam, lParam );
+
+				return TRUE;
+			}
 			if((gEnableConfig & PROTEL_MIDBTN_MOVE) && (distance_xy() > MBTN_ACTION_GRID))	// 中键移动处理
 			{
 				if(distance_x() < distance_y())
@@ -180,6 +200,8 @@ LRESULT ProtelProc(int nWinType, int nCode,WPARAM wParam,LPARAM lParam)
 			}
 			else if(mbtnMove != TRUE)
 			{
+				PKBDLLHOOKSTRUCT pKBDHook = (PKBDLLHOOKSTRUCT)lParam;
+
 				if((gEnableConfig & PROTEL_MIDBTN_SWITCH) && ((nWinType == WIN_PROTEL_PCB) || (nWinType == WIN_DXP_PCB)))
 				{
 					PostMessage(hWnd, WM_KEYDOWN, 106, 0);

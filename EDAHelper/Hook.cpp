@@ -247,7 +247,10 @@ LRESULT CALLBACK CallWndProc(int nCode,WPARAM wParam,LPARAM lParam)
 BOOL HookInstall()// 用WM_ACTIVATEAPP消息判断当前窗口进程可能效率更高，但必需用DLL
 {
 	hkb = SetWindowsHookEx(WH_MOUSE_LL, (HOOKPROC)LowLevelMouseProc, AfxGetInstanceHandle(), 0);
-//	hkb = SetWindowsHookEx(WH_CALLWNDPROC, (HOOKPROC)CallWndProc, GetModuleHandle (NULL), 0);
+#ifdef AD_C_SWITCH
+	hkb = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)LowLevelMouseProc, GetModuleHandle (NULL), 0);
+#endif
+
 //	hkb = SetWindowsHookEx(WH_CBT, (HOOKPROC)CallWndProc, AfxGetInstanceHandle(), 0);
 	if(hkb)
 	{
