@@ -145,6 +145,10 @@ LRESULT ProtelProc(int nWinType, int nCode,WPARAM wParam,LPARAM lParam)
 #ifdef	AD_C_SWITCH
 				PKBDLLHOOKSTRUCT pKBDHook = (PKBDLLHOOKSTRUCT)lParam;
 
+				if((GetAsyncKeyState(VK_CONTROL) || GetAsyncKeyState(VK_SHIFT) || GetAsyncKeyState(VK_MENU)) && 0x8000)
+				{
+					return CallNextHookEx(hkb, nCode, wParam, lParam );
+				}
 				if((gEnableConfig & PROTEL_MIDBTN_SWITCH) && ((pKBDHook->vkCode == 'C')))
 				{
 					PostMessage(hWnd, WM_KEYDOWN, 106, 0);

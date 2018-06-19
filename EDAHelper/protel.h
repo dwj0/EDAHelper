@@ -11,6 +11,8 @@ enum	ProtelEnable_e {
 	PROTEL_RIGBTN_ROTATE	= 1 << 6
 };
 
+#define	AD_C_SWITCH
+
 BOOL	ProtelInit(void);
 UINT	ProtelGetConf(void);
 void	ProtelSetConf(UINT value);
