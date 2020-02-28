@@ -62,6 +62,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 private:
 	TCHAR szVerTip[32];
+public:
+	static DWORD WINAPI SetAutoRun(LPVOID pParam);
 };
 
 //{{AFX_INSERT_LOCATION}}

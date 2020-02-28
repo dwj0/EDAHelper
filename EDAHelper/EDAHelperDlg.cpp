@@ -396,41 +396,10 @@ HCURSOR CEDAHelperDlg::OnQueryDragIcon()
 
 void CEDAHelperDlg::OnCheckAutorun() 
 {
-	HKEY hKey;
-	CWinApp *pApp = AfxGetApp();
-
-	CString str = _T("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
-	if (ERROR_SUCCESS != RegCreateKey(HKEY_CURRENT_USER, str, &hKey))
+	if(!CreateThread(NULL, NULL, SetAutoRun, this, 0, NULL))
 	{
-	   MessageBox(_T("´ò¿ª×¢²á±íÏîÊ§°Ü"));
-	   RegCloseKey(hKey);
-	   return;
+		MessageBox(_T("ÉèÖÃ×ÔÆô¶¯Ê§°Ü: setautorun"));
 	}
-
-	if(((CButton*)GetDlgItem(IDC_CHECK_AUTORUN))->GetCheck())
-	{
-		TCHAR	strPath[MAX_PATH];
-		GetModuleFileName(AfxGetApp()->m_hInstance, strPath, MAX_PATH); 
-
-		if (ERROR_SUCCESS != RegSetValueEx(hKey, _T("EDAHelper"), 0, REG_SZ, (LPBYTE)strPath, (_tcslen(strPath))*sizeof(TCHAR)))
-		{
-		   MessageBox(_T("Ð´×¢²á±íÊ§°Ü"));
-		   RegCloseKey(hKey);
-		   return;
-		}
-	}
-	else
-	{
-		if (ERROR_SUCCESS != RegDeleteValue(hKey, _T("EDAHelper")))
-		{
-		   MessageBox(_T("Ð´×¢²á±íÊ§°Ü"));
-		   RegCloseKey(hKey);
-		   return;
-		}
-
-	}
-
-	RegCloseKey(hKey);
 }
 
 void CEDAHelperDlg::OnButtonMinimize() 
@@ -702,4 +671,47 @@ BOOL CEDAHelperDlg::CheckFirstRun()
 	{
 		return FALSE;
 	}
+}
+
+DWORD WINAPI  CEDAHelperDlg::SetAutoRun(LPVOID pParam)
+{
+	CEDAHelperDlg* dlg = (CEDAHelperDlg *)pParam;
+
+	HKEY hKey;
+	CWinApp *pApp = AfxGetApp();
+
+	CString str = _T("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
+	if (ERROR_SUCCESS != RegCreateKey(HKEY_CURRENT_USER, str, &hKey))
+	{
+		dlg->MessageBox(_T("´ò¿ª×¢²á±íÏîÊ§°Ü"));
+		RegCloseKey(hKey);
+		return 0;
+	}
+
+	if(((CButton*)(dlg->GetDlgItem(IDC_CHECK_AUTORUN)))->GetCheck())
+	{
+		TCHAR	strPath[MAX_PATH];
+		GetModuleFileName(AfxGetApp()->m_hInstance, strPath, MAX_PATH); 
+
+		if (ERROR_SUCCESS != RegSetValueEx(hKey, _T("EDAHelper"), 0, REG_SZ, (LPBYTE)strPath, (_tcslen(strPath))*sizeof(TCHAR)))
+		{
+			dlg->MessageBox(_T("Ð´×¢²á±íÊ§°Ü"));
+			RegCloseKey(hKey);
+			return 0;
+		}
+	}
+	else
+	{
+		if (ERROR_SUCCESS != RegDeleteValue(hKey, _T("EDAHelper")))
+		{
+			dlg->MessageBox(_T("Ð´×¢²á±íÊ§°Ü"));
+			RegCloseKey(hKey);
+			return 0;
+		}
+
+	}
+
+	RegCloseKey(hKey);
+	return 0;
+
 }
