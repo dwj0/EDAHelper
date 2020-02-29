@@ -22,7 +22,7 @@ static char THIS_FILE[] = __FILE__;
 // CEDAHelperDlg dialog
 
 static TCHAR	*AppDesc = 
-_T("2.1.15(11周年纪念版)说明：\r\n")
+_T("使用说明\r\n")
 _T("    本软件是多种EDA软件的鼠标增强工具，绿色单文件，支持Win9x/NT/2000/XP/WIN7，其中WIN7需要以管理员模式运行，")
 _T("另外，Win9x需要编译成非UNICODE版本，有需要的用户可发邮件给我索取，支持protel99se，DXP(AD)，PADS，OrCAD的capture、")
 _T("Cam350、Saber、PC Schematic、Allegro、CircuitCAM,并且对每个软件的功能都可设置，用户可根据使用习惯打开或者关闭功能。\r\n")
@@ -81,7 +81,10 @@ _T("\r\n")
 _T("代码获取方法：\"svn checkout https://dbghelper.googlecode.com/svn/EDAHelper\"\r\n")
 
 _T("\r\n更新历史：\r\n")
-_T("2.1.15(20180325)：\r\n")
+_T("2.1.16(20200228)：\r\n")
+_T("    1、解决设置开机启动时鼠标卡死的问题（开着杀毒软件拦截的情况）\r\n")
+_T("    注：如果被操作EDA软件是管理方式启动的，EDAHelper也必须是管理员方式启动才有效，而管理员方式启动时，64位程序设置开机启动就无效了\r\n")
+_T("2.1.15(20180325-11周年纪念版)：\r\n")
 _T("    1、修改AD里缩放失效的bug\r\n")
 _T("2.1.14(20180325)：\r\n")
 _T("    1、修改protel99se里3D模式时缩放等失效的问题\r\n")
