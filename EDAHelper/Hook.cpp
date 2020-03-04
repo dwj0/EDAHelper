@@ -79,10 +79,13 @@ WindowType_t CheckProcess(void)
 			if(pGetModuleBaseName( hProcess, hMod, szProcessName, 
 							   sizeof(szProcessName)/sizeof(TCHAR)))
 			{
-				DWORD nStyle;
+				DWORD nStyle, nPStyle;
+				HWND hPWnd;
 				_tcslwr(szProcessName);
 				GetClassName(hWnd, szClassName, 16);
 				nStyle = GetWindowLong(hWnd, GWL_STYLE);
+				hPWnd = GetParent(hWnd);
+				nPStyle = GetWindowLong(hPWnd, GWL_STYLE);
 //				TRACE1("nStyle = 0x%x\n", nStyle);
 
 				if(_tcsstr(szProcessName, _T("client99se")) || _tcsstr(szProcessName, _T("quickpcb")))
@@ -164,7 +167,7 @@ WindowType_t CheckProcess(void)
 				{
 					RetCode = WIN_PADS_PCB;
 				}
-				else if((_tcsstr(szProcessName, _T("blazerouter"))) && !_tcsncmp(szClassName, _T("AfxFrameOrView"), 14) && (nStyle == 0x56300000))
+				else if((_tcsstr(szProcessName, _T("blazerouter"))) && !_tcsncmp(szClassName, _T("AfxFrameOrView"), 14) && (nStyle == 0x56300000) && (nPStyle == 0x15CFC000))
 				{
 					RetCode = WIN_PADS_ROUTER;
 				}
