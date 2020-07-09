@@ -130,10 +130,10 @@ WindowType_t CheckProcess(void)
 				}
 				else if(_tcsstr(szProcessName, _T("dxp")) ||_tcsstr(szProcessName, _T("x2")))
 				{
-					if (!_tcsncmp(szClassName, _T("TdxBarSubMenuCo"), 10))
-					{
-						RetCode = WIN_DXP_SCH;
-					}
+// 					if (!_tcsncmp(szClassName, _T("TdxBarSubMenuCo"), 10))
+// 					{
+// 						RetCode = WIN_DXP_SCH;
+// 					}
 					if (!_tcsncmp(szClassName, _T("Sch"), 3))
 					{
 						RetCode = WIN_DXP_SCH;
@@ -154,6 +154,8 @@ WindowType_t CheckProcess(void)
 					{
 						RetCode = WIN_DXP_PCB;
 					}
+					TRACE1("%s\n", szClassName);
+					TRACE1("%d\n", RetCode);
 				}
 				else if((_tcsstr(szProcessName, _T("powerlogic")) || _tcsstr(szProcessName, _T("powerl~1.exe"))) && !_tcsncmp(szClassName, _T("AfxFrameOrView"), 14))
 				{

@@ -71,7 +71,11 @@ BEGIN_MESSAGE_MAP(CMyPropertyPage1, CMyPropertyPage)
 	ON_BN_CLICKED(IDC_CHECK3, OnCheck1)
 	ON_BN_CLICKED(IDC_CHECK4, OnCheck1)
 	ON_BN_CLICKED(IDC_CHECK5, OnCheck1)
+	ON_BN_CLICKED(IDC_CHECK6, OnCheck1)
+	ON_BN_CLICKED(IDC_CHECK7, OnCheck1)
+	ON_BN_CLICKED(IDC_CHECK8, OnCheck1)
 	//}}AFX_MSG_MAP
+	ON_EN_CHANGE(IDC_EDIT_KEY, &CMyPropertyPage1::OnEnChangeEditKey)
 END_MESSAGE_MAP()
 
 
@@ -313,7 +317,7 @@ void CMyPropertyPage1::OnCheck1()
 {
 	SetModified(TRUE);
 }
-
+extern DWORD dwKeySwitch;// for protel
 BOOL CMyPropertyPage1::OnApply() 
 {
 	int	nPageCount;
@@ -332,6 +336,26 @@ BOOL CMyPropertyPage1::OnApply()
 			nConfig = page->CheckConf(FALSE);
 			page->SetConf(nConfig);
 			pApp->WriteProfileInt(CONFIG_ENTRY, page->szPageName, nConfig);
+			if(nPageCount == 0 && (nConfig & PROTEL_KEY_SWITCH))//protel
+			{
+				CString str;
+				GetDlgItem(IDC_EDIT_KEY)->GetWindowText(str);
+				if(str.GetLength())
+				{
+					str.MakeUpper();
+					dwKeySwitch = str.GetBuffer()[0];
+
+					if(!((dwKeySwitch <= 'Z' && dwKeySwitch >= 'A') || (dwKeySwitch <= 'z' && dwKeySwitch >= 'a')))
+					{
+						MessageBox(L"请输入A-Z", L"按键换层");
+						return false;
+					}
+				}
+				pApp->WriteProfileInt(CONFIG_ENTRY, _T("PROTEL_KEY_SWITCH"), (int)dwKeySwitch);
+
+				TRACE1("0x%x\n", (unsigned int)dwKeySwitch);
+				TRACE0("KEY SWITCH Enable\n");
+			}
 		}
 	}
 
@@ -379,7 +403,7 @@ UINT CMyPropertyPage::CheckConf(BOOL bReadFromCache)
 	UINT	nResult = 0xFFFFFFFF, i;
 	void*	ctrl;
 	// IDC_CHECK1必须对应当前页面的全局使能，其它选项也必须按序列对应
-	UINT	aCheckCtrlID[] = {IDC_CHECK1, IDC_CHECK2, IDC_CHECK3, IDC_CHECK4, IDC_CHECK5, IDC_CHECK6, IDC_CHECK7};
+	UINT	aCheckCtrlID[] = {IDC_CHECK1, IDC_CHECK2, IDC_CHECK3, IDC_CHECK4, IDC_CHECK5, IDC_CHECK6, IDC_CHECK7, IDC_CHECK8};
 
 	if(bReadFromCache)
 	{
@@ -408,10 +432,19 @@ UINT CMyPropertyPage::CheckConf(BOOL bReadFromCache)
 	return nResult;
 
 }
-
-BOOL CMyPropertyPage1::OnInitDialog() 
+BOOL CMyPropertyPage1::OnInitDialog() // for protel
 {
 	CMyPropertyPage::OnInitDialog();
+	CWinApp *pApp = AfxGetApp();
+	dwKeySwitch = pApp->GetProfileInt(CONFIG_ENTRY, _T("PROTEL_KEY_SWITCH"), 0);
+
+	if(dwKeySwitch !=0)
+	{
+		wchar_t ss[5];
+		ss[0] = (wchar_t)dwKeySwitch;
+		ss[1] = 0;
+		GetDlgItem(IDC_EDIT_KEY)->SetWindowText(ss);
+	}
 	
 	CheckConf(TRUE);
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -484,4 +517,9 @@ BOOL CMyPropertyPage8::OnInitDialog()
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
+}
+
+void CMyPropertyPage1::OnEnChangeEditKey()
+{
+	SetModified(TRUE);
 }

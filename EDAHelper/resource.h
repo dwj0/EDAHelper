@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by EDAHelper.rc
 //
 #define IDM_ABOUTBOX                    0x0010
@@ -40,10 +40,13 @@
 #define IDC_EDIT1                       1014
 #define IDC_CHECK7                      1014
 #define IDC_UPDATE_INFO                 1014
+#define IDC_CHECK8                      1015
 #define IDC_SW_INFO                     1017
 #define IDC_RADIO2                      1019
 #define IDC_STATIC_HOME                 1020
 #define IDC_STATIC_FEEDBACK             1021
+#define IDC_EDIT2                       1023
+#define IDC_EDIT_KEY                    1023
 
 // Next default values for new objects
 // 
@@ -51,7 +54,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        136
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1023
+#define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           109
 #endif
 #endif

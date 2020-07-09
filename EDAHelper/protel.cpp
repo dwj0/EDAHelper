@@ -8,6 +8,7 @@
 static const TCHAR FuncAppName[]=_T("Protel");
 
 static UINT gEnableConfig;
+DWORD dwKeySwitch;
 
 UINT	ProtelGetConf(void)
 {
@@ -136,31 +137,29 @@ LRESULT ProtelProc(int nWinType, int nCode,WPARAM wParam,LPARAM lParam)
 				return CallNextHookEx(hkb, nCode, wParam, lParam );
 			}
 		}
-		else if((gEnableConfig & (PROTEL_MIDBTN_SWITCH | PROTEL_MIDBTN_PLACE | PROTEL_MIDBTN_MOVE)) && (wParam == WM_KEYDOWN ||wParam == WM_MBUTTONUP))
+		else if((gEnableConfig & (PROTEL_MIDBTN_SWITCH | PROTEL_MIDBTN_PLACE | PROTEL_MIDBTN_MOVE | PROTEL_KEY_SWITCH)) && (wParam == WM_KEYDOWN ||wParam == WM_MBUTTONUP))
 		{
 			mbtnDown = FALSE;
 			GetCursorPos(&pt_cur);
 			if(wParam == WM_KEYDOWN)
 			{
-#ifdef	AD_C_SWITCH
-				PKBDLLHOOKSTRUCT pKBDHook = (PKBDLLHOOKSTRUCT)lParam;
+					PKBDLLHOOKSTRUCT pKBDHook = (PKBDLLHOOKSTRUCT)lParam;
 
-				if((GetAsyncKeyState(VK_CONTROL) || GetAsyncKeyState(VK_SHIFT) || GetAsyncKeyState(VK_MENU)) && 0x8000)
-				{
-					return CallNextHookEx(hkb, nCode, wParam, lParam );
-				}
-				if((gEnableConfig & PROTEL_MIDBTN_SWITCH) && ((pKBDHook->vkCode == 'C')))
-				{
-					PostMessage(hWnd, WM_KEYDOWN, 106, 0);
-					PostMessage(hWnd, WM_KEYUP, 106, 0);
-					if(nWinType & (WIN_PROTEL_PCB | WIN_PROTEL_SCH))
+					if((GetAsyncKeyState(VK_CONTROL) || GetAsyncKeyState(VK_SHIFT) || GetAsyncKeyState(VK_MENU)) && 0x8000)
 					{
-						PostMessage(hWnd, WM_KEYDOWN, VK_END, 0);
+						return CallNextHookEx(hkb, nCode, wParam, lParam );
 					}
-				}
-				else
-#endif
-					return CallNextHookEx(hkb, nCode, wParam, lParam );
+					if((gEnableConfig & PROTEL_KEY_SWITCH) && (pKBDHook->vkCode == dwKeySwitch))
+					{
+						PostMessage(hWnd, WM_KEYDOWN, 106, 0);
+						PostMessage(hWnd, WM_KEYUP, 106, 0);
+						if(nWinType & (WIN_PROTEL_PCB | WIN_PROTEL_SCH))
+						{
+							PostMessage(hWnd, WM_KEYDOWN, VK_END, 0);
+						}
+					}
+					else
+						return CallNextHookEx(hkb, nCode, wParam, lParam );
 
 				return TRUE;
 			}
@@ -282,6 +281,7 @@ static HookList_t	ProtelHook = {NULL,
 BOOL ProtelInit()
 {
 	CWinApp *pApp = AfxGetApp();
-	gEnableConfig = pApp->GetProfileInt(CONFIG_ENTRY, FuncAppName, 0xFFFFFFFF);
+	gEnableConfig = pApp->GetProfileInt(CONFIG_ENTRY, FuncAppName, 0xFFFFFFFF & (~(PROTEL_KEY_SWITCH)));
+	dwKeySwitch = pApp->GetProfileInt(CONFIG_ENTRY, _T("PROTEL_KEY_SWITCH"), 0);
 	return HookRegister(&ProtelHook);
 }
