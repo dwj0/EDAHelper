@@ -63,6 +63,8 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 		HWND	hWnd;
 		GetCursorPos(&pt);
 		hWnd = WindowFromPoint(pt);
+		TRACE2("px = %d, py = %d\n",pMSLLHook->pt.x, pMSLLHook->pt.y);
+		TRACE2("ptx = %d, pty = %d\n",pt.x, pt.y);
 		if(rbtnDown)
 		{
 			int		step = PIXEL_PER_STEP;

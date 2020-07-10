@@ -90,16 +90,20 @@ WindowType_t CheckProcess(void)
 
 				if(_tcsstr(szProcessName, _T("client99se")) || _tcsstr(szProcessName, _T("quickpcb")))
 				{
-					TRACE1("szClassName = %s\n", szClassName);
-					if	(!_tcsncmp(szClassName, _T("#32768"), 3))
+					HWND h = FindWindow(_T("#32768"), NULL);
+					if(h != NULL) 
+					{
+						TRACE(_T("pop menu found\n"));
+					}
+// 					if	(!_tcsncmp(szClassName, _T("#32768"), 3))
+// 					{
+// 						RetCode = WIN_PROTEL_SCH;
+// 					}
+					else if	(!_tcsncmp(szClassName, _T("TBinderViewTabC"), 10))
 					{
 						RetCode = WIN_PROTEL_SCH;
 					}
-					if	(!_tcsncmp(szClassName, _T("TBinderViewTabC"), 10))
-					{
-						RetCode = WIN_PROTEL_SCH;
-					}
-					if	(!_tcsncmp(szClassName, _T("Sch Window"), 3))
+					else if	(!_tcsncmp(szClassName, _T("Sch Window"), 3))
 					{
 						RetCode = WIN_PROTEL_SCH;
 					}
@@ -130,15 +134,21 @@ WindowType_t CheckProcess(void)
 				}
 				else if(_tcsstr(szProcessName, _T("dxp")) ||_tcsstr(szProcessName, _T("x2")))
 				{
+					HWND h = FindWindow(_T("TdxBarSubMenuControl"), NULL);
+					if(h != NULL) 
+					{
+						TRACE(_T("pop menu found\n"));
+						OutputDebugString(_T("hahaha"));
+					}
 // 					if (!_tcsncmp(szClassName, _T("TdxBarSubMenuCo"), 10))
 // 					{
 // 						RetCode = WIN_DXP_SCH;
 // 					}
-					if (!_tcsncmp(szClassName, _T("Sch"), 3))
+					else if (!_tcsncmp(szClassName, _T("Sch"), 3))
 					{
 						RetCode = WIN_DXP_SCH;
 					}
-					if (!_tcsncmp(szClassName, _T("TPagePreviewPanel"), 10))
+					else if (!_tcsncmp(szClassName, _T("TPagePreviewPanel"), 10))
 					{
 						RetCode = WIN_DXP_SCH;
 					}
@@ -154,8 +164,8 @@ WindowType_t CheckProcess(void)
 					{
 						RetCode = WIN_DXP_PCB;
 					}
-					TRACE1("%s\n", szClassName);
-					TRACE1("%d\n", RetCode);
+ 					TRACE1("%s\n", szClassName);
+ 					TRACE1("%d\n", RetCode);
 				}
 				else if((_tcsstr(szProcessName, _T("powerlogic")) || _tcsstr(szProcessName, _T("powerl~1.exe"))) && !_tcsncmp(szClassName, _T("AfxFrameOrView"), 14))
 				{
