@@ -195,7 +195,7 @@ WindowType_t CheckProcess(void)
 				{
 					RetCode = WIN_PC_SCHEMATIC;
 				}
-				else if(_tcsstr(szProcessName, _T("allegro")) && !_tcsncmp(szClassName, _T("AfxFrameOrView"), 12))
+				else if(_tcsstr(szProcessName, _T("allegro")) && (!_tcsncmp(szClassName, _T("AfxFrameOrView"), 12) || !_tcsncmp(szClassName, _T("Qt5QWindowOwnDCIcon"), 12)))
 				{
 					RetCode = WIN_CADENCE_ALLEGRO;
 				}
