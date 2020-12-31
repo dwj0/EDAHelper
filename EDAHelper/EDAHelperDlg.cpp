@@ -81,6 +81,8 @@ _T("\r\n")
 _T("代码获取方法：\"git clone https://gitee.com/spacexplorer/EDAHelper.git\r\n")
 
 _T("\r\n更新历史：\r\n")
+_T("2.1.18(20201231)：\r\n")
+_T("    1、增加在pads下使用空格旋转，即“空格=CTRL+R”\r\n")
 _T("2.1.17(20200706)：\r\n")
 _T("    1、增加protel/dxp/ad模式下按键换层可设置，默认不能按键换层\r\n")
 _T("    2、解决protel/dxp/ad下某按键无效的问题\r\n")
