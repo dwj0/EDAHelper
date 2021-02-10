@@ -488,7 +488,6 @@ int GetMachineID(TCHAR* machineid){
   
     BYTE NetCardID[16];
 	char  sztmp[13];
-	int	i;
     int res=0;  
     res=GetMac(NetCardID,true);  
     if(res!=0){  

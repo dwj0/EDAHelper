@@ -49,7 +49,7 @@ BOOL AlreadyRunning()
    {
 		bFound = TRUE;
 //		MessageBox(NULL, _T("程序已经运行！"), _T("温馨提示"), MB_OK | MB_ICONINFORMATION);
-		HWND hWnd = FindWindowEx(NULL, NULL, NULL, _T("EDAHelper(原名protel99se鼠标增强工具)"));
+		HWND hWnd = FindWindowEx(NULL, NULL, NULL, _T("EDAHelper"));
 		if(hWnd)
 		{
 			if (::IsIconic(hWnd)) 

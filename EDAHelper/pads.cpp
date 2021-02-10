@@ -48,6 +48,7 @@ static void RefreshScreen(HWND hWnd)
 	PostMessage(hWnd, WM_KEYUP, VK_END, 0);
 }
 
+extern BOOL   RotateMode;		//在pads里判断是否处于布局模式，用于空格或者右键代替CTRL+R旋转
 
 LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -57,23 +58,25 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 	}
 	PMSLLHOOKSTRUCT pMSLLHook = (PMSLLHOOKSTRUCT)lParam;
 	PKBDLLHOOKSTRUCT pKBDHook = (PKBDLLHOOKSTRUCT)lParam;
-	if(WM_KEYDOWN == wParam && (pKBDHook->vkCode == ' '))
+	if(RotateMode)
 	{
-		POINT	pt;
-		HWND	hWnd;
-		GetCursorPos(&pt);
-		hWnd = WindowFromPoint(pt);
-		//PostMessage(hWnd, WM_KEYDOWN, VK_TAB, 0);
-		//PostMessage(hWnd, WM_KEYUP, VK_TAB, 0);
+		if(WM_KEYDOWN == wParam && (pKBDHook->vkCode == ' '))
+		{
+			POINT	pt;
+			HWND	hWnd;
+			GetCursorPos(&pt);
+			hWnd = WindowFromPoint(pt);
+			//PostMessage(hWnd, WM_KEYDOWN, VK_TAB, 0);
+			//PostMessage(hWnd, WM_KEYUP, VK_TAB, 0);
 
-		keybd_event(VK_CONTROL, 0,  0, 0);	// CTRL+R
-		keybd_event('R', 0,  0, 0);
-		keybd_event('R', 0,  KEYEVENTF_KEYUP, 0);
-		keybd_event(VK_CONTROL, 0,  KEYEVENTF_KEYUP, 0);
+			keybd_event(VK_CONTROL, 0,  0, 0);	// CTRL+R
+			keybd_event('R', 0,  0, 0);
+			keybd_event('R', 0,  KEYEVENTF_KEYUP, 0);
+			keybd_event(VK_CONTROL, 0,  KEYEVENTF_KEYUP, 0);
 
-		return TRUE;
+			return TRUE;
+		}
 	}
-
 	if((gEnableConfig & PADS_RIGBTN_DRAG) && (wParam == WM_MOUSEMOVE))
 	{
 		POINT	pt;

@@ -45,9 +45,9 @@ LRESULT OrcadProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 			{
 				HWND   hStatusBar; 
 				
-				DWORD	dwProcessID;
-				void *	Pointer;
-				HANDLE	hProcess;
+				static DWORD	dwProcessID, dwProcessIDPre = 0;
+				static void *	Pointer = NULL;
+				static HANDLE	hProcess;
 				TCHAR	status_buf[64];
 				SIZE_T	NumberOfBytesRead;
 				int		scale;
@@ -55,19 +55,38 @@ LRESULT OrcadProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 				hStatusBar = GetDlgItem(GetAncestor(hWnd, GA_ROOT), AFX_IDW_STATUS_BAR);
 				::GetWindowThreadProcessId(hStatusBar, &dwProcessID);
 				hProcess = OpenProcess(PROCESS_VM_OPERATION|PROCESS_VM_READ|PROCESS_VM_WRITE, false, dwProcessID);
-				Pointer = VirtualAllocEx(hProcess, NULL, 64, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE); 
-				::SendMessage(hStatusBar, SB_GETTEXT, 2, (LPARAM)Pointer);
-				if(::ReadProcessMemory(hProcess, Pointer, status_buf, sizeof(status_buf), &NumberOfBytesRead))
+				if((Pointer == NULL) || (dwProcessID != dwProcessIDPre))
 				{
-					status_buf[9] = 0;
-					scale = _ttoi(status_buf + 6);
-					if (scale == 0)
-					{
-						scale = 100;
-					}
-					step = (int)(step * (scale/400.0));
+					Pointer = VirtualAllocEx(hProcess, NULL, 64, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE); 
+					dwProcessIDPre = dwProcessID;
 				}
-				VirtualFreeEx(hProcess, Pointer, 64, MEM_RELEASE);
+				if(Pointer != NULL)
+				{
+					::SendMessage(hStatusBar, SB_GETTEXT, 2, (LPARAM)Pointer);
+					if(::ReadProcessMemory(hProcess, Pointer, status_buf, sizeof(status_buf), &NumberOfBytesRead))
+					{
+						status_buf[9] = 0;
+						scale = _ttoi(status_buf + 6);
+						if (scale == 0)
+						{
+							scale = 100;
+						}
+						step = (int)(step * (scale/400.0));
+					}
+					else
+					{
+						int err = GetLastError();
+						TRACE1("err = %d\n", err);
+					}
+
+				}
+				else
+				{
+					int err = GetLastError();
+					TRACE1("err = %d\n", err);
+				}
+
+				//VirtualFreeEx(hProcess, Pointer, 64, MEM_RELEASE);
 				CloseHandle(hProcess);
 
 				distance = pMSLLHook->pt.x - CurPosPre.x;

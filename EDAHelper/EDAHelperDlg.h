@@ -58,6 +58,7 @@ protected:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg  LRESULT  OnHotKey(WPARAM  wparam,  LPARAM  param);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:

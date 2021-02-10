@@ -45,6 +45,7 @@ _T("    2. 向下滚动滚轮 --> 缩小，相当于PageDown\r\n")
 _T("    3. 按住鼠标右键移动，可移动工作区\r\n")
 _T("    4. 鼠标中键点击 --> 切换图层，相当于F4，原中键点击功能废弃\r\n")
 _T("    5. 按左键拖目标 --> 再按右键可旋转，相当于TAB键的功能，在布局时非常好用，请留意\r\n")
+_T("    6. 空格旋转器件 --> 按CTRL+ALT+R，打开或者关闭空格旋转，按空格相当于CTRL+R，这个功能不能保存，每次打开软件时默认关闭状态\r\n")
 _T("\r\n针对OrCAD：\r\n")
 _T("    1. 向上滚动滚轮 --> 放大，相当于字母\"I\"键\r\n")
 _T("    2. 向下滚动滚轮 --> 缩小相当于字母\"O\"键\r\n")
@@ -81,6 +82,11 @@ _T("\r\n")
 _T("代码获取方法：\"git clone https://gitee.com/spacexplorer/EDAHelper.git\r\n")
 
 _T("\r\n更新历史：\r\n")
+_T("2.1.20(20210210)：\r\n")
+_T("    1. 空格旋转器件 --> 按CTRL+ALT+R，打开或者关闭空格旋转，按空格相当于CTRL+R，这个功能不能保存，每次打开软件时默认关闭状态\r\n")
+_T("    2. 修改orcad下隐藏12年的内存泄漏BUG，之前的版本右键拖动时，capture.exe进程的内存会明显不停增加，orcad使用时间长了之后，可能会导致右键拖动不灵敏\r\n")
+_T("2.1.19(20201231)：\r\n")
+_T("    1、通过CTRL+ALT+R切换是否进入PADS布局模式，即在PADS下使用空格或者右键旋转，即“空格/右键=CTRL+R”\r\n")
 _T("2.1.18(20201231)：\r\n")
 _T("    1、增加在pads下使用空格旋转，即“空格=CTRL+R”\r\n")
 _T("2.1.17(20200706)：\r\n")
@@ -278,6 +284,7 @@ BEGIN_MESSAGE_MAP(CEDAHelperDlg, CDialog)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_CHECK_AUTORUN, OnCheckAutorun)
 	ON_BN_CLICKED(IDC_BUTTON_MINIMIZE, OnButtonMinimize)
+	ON_MESSAGE(WM_HOTKEY, OnHotKey) //消息映射
 	ON_WM_CLOSE()
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON_HELP, OnButtonHelp)
@@ -293,6 +300,16 @@ END_MESSAGE_MAP()
 // CEDAHelperDlg message handlers
 
 UINT   WM_TASKBARCREATED;
+BOOL   RotateMode = 0;		//在pads里判断是否处于布局模式，用于空格或者右键代替CTRL+R旋转
+#define		ROTATE_MODE_MSG	1
+
+LRESULT CEDAHelperDlg::OnHotKey(WPARAM  wparam,  LPARAM  param)
+{
+
+	if(ROTATE_MODE_MSG == wparam)
+		RotateMode = !RotateMode;
+	return 0;
+}
 
 BOOL CEDAHelperDlg::OnInitDialog()
 {
@@ -363,6 +380,8 @@ BOOL CEDAHelperDlg::OnInitDialog()
 	{
 		PostMessage(WM_SYSCOMMAND,SC_MINIMIZE,0);
 	}
+
+	if(!RegisterHotKey(GetSafeHwnd(), ROTATE_MODE_MSG, MOD_CONTROL | MOD_ALT, 'R')) MessageBox(_T("热键注册失败"));
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -522,6 +541,8 @@ LRESULT CEDAHelperDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 void CEDAHelperDlg::OnDestroy() 
 {
 	CDialog::OnDestroy();
+
+	UnregisterHotKey(GetSafeHwnd(), ROTATE_MODE_MSG);
 	
 	Shell_NotifyIcon(NIM_DELETE, &m_tnid);
 }
