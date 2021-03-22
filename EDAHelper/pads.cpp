@@ -77,6 +77,13 @@ LRESULT PadsProc(int nWinType, int nCode, WPARAM wParam, LPARAM lParam)
 			return TRUE;
 		}
 	}
+/*	if((NULL != FindWindow(_T("#32770"), NULL))  && (wParam == WM_RBUTTONDOWN))
+	{
+
+		keybd_event(VK_RETURN, 0,  0, 0);
+		keybd_event(VK_RETURN, 0,  KEYEVENTF_KEYUP, 0);
+		return TRUE;
+	}*/
 	if((gEnableConfig & PADS_RIGBTN_DRAG) && (wParam == WM_MOUSEMOVE))
 	{
 		POINT	pt;

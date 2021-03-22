@@ -82,6 +82,8 @@ _T("\r\n")
 _T("代码获取方法：\"git clone https://gitee.com/spacexplorer/EDAHelper.git\r\n")
 
 _T("\r\n更新历史：\r\n")
+_T("2.1.21(20210322)：\r\n")
+_T("    1. 修改pads router里窗口非最大化时功能失效的问题\r\n")
 _T("2.1.20(20210210)：\r\n")
 _T("    1. 空格旋转器件 --> 按CTRL+ALT+R，打开或者关闭空格旋转，按空格相当于CTRL+R，这个功能不能保存，每次打开软件时默认关闭状态\r\n")
 _T("    2. 修改orcad下隐藏12年的内存泄漏BUG，之前的版本右键拖动时，capture.exe进程的内存会明显不停增加，orcad使用时间长了之后，可能会导致右键拖动不灵敏\r\n")
